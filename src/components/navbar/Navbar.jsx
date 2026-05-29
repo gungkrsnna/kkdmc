@@ -1,0 +1,358 @@
+import { useState } from 'react'
+
+import {
+  FaGlobeAsia,
+} from 'react-icons/fa'
+
+import {
+  HiOutlineMenuAlt3,
+  HiOutlineX,
+} from 'react-icons/hi'
+
+import {
+  Link,
+  NavLink,
+} from 'react-router-dom'
+
+import Logo from '../../assets/logo/logo.png'
+
+function Navbar() {
+
+  const [open, setOpen] = useState(false)
+
+  return (
+
+    <>
+
+      <nav className="w-full bg-white/80 backdrop-blur-md border-b border-black/[0.04] sticky top-0 z-50">
+
+        <div className="max-w-7xl mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
+
+          {/* Left */}
+{/* Left */}
+<Link
+  to="/"
+  className="flex items-center"
+>
+
+  <img
+    src={Logo}
+    alt="BaliTrip"
+    className="h-20 w-auto object-contain"
+  />
+
+</Link>
+
+          {/* Desktop Menu */}
+          <div className="hidden lg:flex items-center gap-8 text-sm font-medium">
+
+  <NavLink
+    to="/"
+    className={({ isActive }) =>
+      `
+        transition
+        relative
+        pb-1
+
+        ${isActive
+          ? 'text-primary'
+          : 'text-gray-700 hover:text-primary'
+        }
+      `
+    }
+  >
+    Home
+  </NavLink>
+
+  <NavLink
+    to="/destinations"
+    className={({ isActive }) =>
+      `
+        transition
+        relative
+        pb-1
+
+        ${isActive
+          ? 'text-primary'
+          : 'text-gray-700 hover:text-primary'
+        }
+      `
+    }
+  >
+    Destinations
+  </NavLink>
+
+  <NavLink
+    to="/activities"
+    className={({ isActive }) =>
+      `
+        transition
+        relative
+        pb-1
+
+        ${isActive
+          ? 'text-primary'
+          : 'text-gray-700 hover:text-primary'
+        }
+      `
+    }
+  >
+    Activities
+  </NavLink>
+
+  <NavLink
+    to="/transport"
+    className={({ isActive }) =>
+      `
+        transition
+        relative
+        pb-1
+
+        ${isActive
+          ? 'text-primary'
+          : 'text-gray-700 hover:text-primary'
+        }
+      `
+    }
+  >
+    Transport
+  </NavLink>
+
+</div>
+
+          {/* Right */}
+          <div className="flex items-center gap-3">
+
+            {/* Desktop Auth */}
+            <div className="hidden lg:flex items-center gap-3">
+
+              <Link
+  to="/login"
+  className="
+    text-sm
+    font-medium
+    text-gray-700
+    hover:text-primary
+    transition
+  "
+>
+  Login
+</Link>
+
+<Link
+  to="/register"
+  className="
+    bg-primary
+    hover:opacity-90
+    transition
+    text-white
+    px-5
+    h-11
+    rounded-xl
+    text-sm
+    font-semibold
+    flex
+    items-center
+  "
+>
+  Register
+</Link>
+
+            </div>
+
+            {/* Mobile Menu */}
+            <button
+              onClick={() => setOpen(true)}
+              className="lg:hidden w-10 h-10 rounded-xl border border-gray-200 flex items-center justify-center"
+            >
+
+              <HiOutlineMenuAlt3 className="text-xl" />
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </nav>
+
+      {/* Overlay */}
+      <div
+        onClick={() => setOpen(false)}
+        className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] transition-all duration-300 ${
+          open
+            ? 'opacity-100 visible'
+            : 'opacity-0 invisible'
+        }`}
+      />
+
+      {/* Drawer */}
+      <div
+        className={`fixed top-0 right-0 h-full w-[85%] max-w-sm bg-white z-[70] transition-transform duration-300 shadow-2xl ${
+          open
+            ? 'translate-x-0'
+            : 'translate-x-full'
+        }`}
+      >
+
+        {/* Header */}
+        <div className="h-16 px-5 border-b flex items-center justify-between">
+
+          <div className="flex items-center gap-3">
+
+            <div className="flex items-center">
+
+  <img
+    src={Logo}
+    alt="KK DMC"
+    className="h-14 w-auto object-contain"
+  />
+
+</div>
+
+          </div>
+
+          <button
+            onClick={() => setOpen(false)}
+            className="w-10 h-10 rounded-xl border border-gray-200 flex items-center justify-center"
+          >
+
+            <HiOutlineX className="text-xl" />
+
+          </button>
+
+        </div>
+
+        {/* Menu */}
+        <div className="p-5 flex flex-col">
+
+  <NavLink
+    to="/"
+    className={({ isActive }) =>
+      `
+        py-4
+        border-b
+        font-medium
+        transition
+
+        ${isActive
+          ? 'text-primary'
+          : 'text-gray-700'
+        }
+      `
+    }
+  >
+    Home
+  </NavLink>
+
+  <NavLink
+    to="/destinations"
+    className={({ isActive }) =>
+      `
+        py-4
+        border-b
+        font-medium
+        transition
+
+        ${isActive
+          ? 'text-primary'
+          : 'text-gray-700'
+        }
+      `
+    }
+  >
+    Destinations
+  </NavLink>
+
+  <NavLink
+    to="/activities"
+    className={({ isActive }) =>
+      `
+        py-4
+        border-b
+        font-medium
+        transition
+
+        ${isActive
+          ? 'text-primary'
+          : 'text-gray-700'
+        }
+      `
+    }
+  >
+    Activities
+  </NavLink>
+
+  <NavLink
+    to="/transport"
+    className={({ isActive }) =>
+      `
+        py-4
+        border-b
+        font-medium
+        transition
+
+        ${isActive
+          ? 'text-primary'
+          : 'text-gray-700'
+        }
+      `
+    }
+  >
+    Transport
+  </NavLink>
+
+</div>
+
+        {/* Bottom */}
+        <div className="absolute bottom-0 left-0 w-full p-5 border-t bg-white">
+
+          <div className="grid grid-cols-2 gap-3">
+
+            <Link
+  to="/login"
+  onClick={() => setOpen(false)}
+  className="
+    h-12
+    rounded-xl
+    border
+    border-gray-300
+    font-semibold
+    flex
+    items-center
+    justify-center
+  "
+>
+  Login
+</Link>
+
+<Link
+  to="/register"
+  onClick={() => setOpen(false)}
+  className="
+    h-12
+    rounded-xl
+    bg-primary
+    text-white
+    font-semibold
+    flex
+    items-center
+    justify-center
+  "
+>
+  Register
+</Link>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </>
+
+  )
+
+}
+
+export default Navbar
