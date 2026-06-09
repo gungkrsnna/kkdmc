@@ -1,97 +1,103 @@
 function PromoBanner() {
+  const promos = [
+    {
+      id: 1,
+      image:
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+      title: "Summer Escape",
+      subtitle: "Up To 50% Off",
+    },
+    {
+      id: 2,
+      image:
+        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+      title: "Luxury Bali Tour",
+      subtitle: "Special Package",
+    },
+    {
+      id: 3,
+      image:
+        "https://images.unsplash.com/photo-1468413253725-0d5181091126",
+      title: "Weekend Getaway",
+      subtitle: "Limited Offer",
+    },
+  ];
+
   return (
-
     <section className="py-20 bg-soft">
-
       <div className="max-w-7xl mx-auto px-6">
+        <div className="mb-12 text-center">
+          <h2 className="text-4xl font-black mb-4">
+            Special Promotions
+          </h2>
+          <p className="text-gray-500">
+            Don't miss our latest travel deals and exclusive offers.
+          </p>
+        </div>
 
-        <div
-          className="
-            relative
-            overflow-hidden
-            rounded-[40px]
-            min-h-[500px]
-          "
-        >
+        <div className="grid md:grid-cols-3 gap-6">
+          {promos.map((promo) => (
+            <div
+              key={promo.id}
+              className="
+                relative
+                overflow-hidden
+                rounded-3xl
+                h-[420px]
+                group
+                cursor-pointer
+              "
+            >
+              <img
+                src={promo.image}
+                alt={promo.title}
+                className="
+                  absolute
+                  inset-0
+                  w-full
+                  h-full
+                  object-cover
+                  transition
+                  duration-500
+                  group-hover:scale-110
+                "
+              />
 
-          {/* Background */}
-          <img
-            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
-            alt="Promo"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+              <div className="absolute inset-0 bg-black/40" />
 
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-black/50" />
+              <div className="relative z-10 h-full flex flex-col justify-end p-6 text-white">
+                <span className="bg-primary px-3 py-1 rounded-full text-xs font-semibold w-fit mb-3">
+                  PROMO
+                </span>
 
-          {/* Content */}
-          <div className="relative z-10 h-full flex items-center">
+                <h3 className="text-2xl font-bold mb-2">
+                  {promo.title}
+                </h3>
 
-            <div className="max-w-2xl p-10 md:p-20 text-white">
-
-              <span className="bg-primary px-4 py-2 rounded-full text-sm font-semibold inline-block mb-6">
-                LIMITED OFFER
-              </span>
-
-              <h2 className="text-5xl font-black leading-tight mb-6">
-
-                Get Special Discount
-                <br />
-                Up To 50% Off
-
-              </h2>
-
-              <p className="text-lg text-gray-200 leading-relaxed mb-10">
-
-                Explore Bali with unforgettable travel
-                experiences, premium destinations,
-                and exclusive seasonal promotions.
-
-              </p>
-
-              <div className="flex flex-wrap gap-4">
+                <p className="text-white/90 mb-4">
+                  {promo.subtitle}
+                </p>
 
                 <button
                   className="
-                    bg-primary
-                    px-7
-                    py-4
-                    rounded-2xl
-                    font-bold
+                    bg-white
+                    text-black
+                    py-3
+                    rounded-xl
+                    font-semibold
                     hover:opacity-90
                     transition
                   "
                 >
-                  Book Now
+                  View Offer
                 </button>
-
-                <button
-                  className="
-                    bg-white/20
-                    backdrop-blur-md
-                    px-7
-                    py-4
-                    rounded-2xl
-                    font-bold
-                    hover:bg-white/30
-                    transition
-                  "
-                >
-                  Learn More
-                </button>
-
               </div>
-
             </div>
-
-          </div>
-
+          ))}
         </div>
-
       </div>
-
     </section>
-  )
+  );
 }
 
-export default PromoBanner
+export default PromoBanner;

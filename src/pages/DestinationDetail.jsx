@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import MainLayout from '../layouts/MainLayout'
 
@@ -102,6 +103,64 @@ function DestinationDetail() {
 
             </div>
 
+          </div>
+
+          <div
+            className="
+              bg-primary
+              rounded-[32px]
+              p-10
+              mb-20
+              text-white
+              flex
+              flex-col
+              lg:flex-row
+              items-center
+              justify-between
+              gap-6
+            "
+          >
+            <div>
+              <h3 className="text-3xl font-black mb-3">
+                Ready to Explore {destination.title}?
+              </h3>
+
+              <p className="text-white/80 max-w-2xl">
+                Reserve your experience now or send us an inquiry
+                and our team will help plan your perfect trip.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-4">
+              <Link
+                to={`/reservation?destination=${destination.slug}`}
+                className="
+                  bg-white
+                  text-primary
+                  px-8
+                  py-4
+                  rounded-2xl
+                  font-semibold
+                "
+              >
+                Reservation Form
+              </Link>
+
+              <Link
+                to={`/inquiry?destination=${destination.slug}`}
+                className="
+                  bg-white/20
+                  border
+                  border-white/20
+                  px-8
+                  py-4
+                  rounded-2xl
+                  font-semibold
+                "
+              >
+                Inquiry Form
+              </Link>
+            </div>
           </div>
 
           {/* ACTIVITIES */}

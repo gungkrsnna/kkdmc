@@ -16,11 +16,11 @@ function Home() {
 
       <CategorySection />
 
+      <PromoBanner />
+
       <PopularActivities />
 
       <DestinationSection />
-
-      <PromoBanner />
 
       <WhyChooseUs />
 

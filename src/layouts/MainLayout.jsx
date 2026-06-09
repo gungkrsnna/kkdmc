@@ -1,5 +1,6 @@
 import Navbar from '../components/navbar/Navbar'
 import Footer from '../components/footer/Footer'
+import FloatingWhatsApp from '../components/common/FloatingWhatsApp'
 
 function MainLayout({ children }) {
   return (
@@ -10,6 +11,8 @@ function MainLayout({ children }) {
       {children}
 
       <Footer />
+
+      <FloatingWhatsApp />
 
     </div>
   )

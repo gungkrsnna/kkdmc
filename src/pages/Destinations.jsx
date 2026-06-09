@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import MainLayout from '../layouts/MainLayout'
 
 import destinations from '../data/destinations'
@@ -7,6 +9,18 @@ import DestinationCard from '../components/cards/DestinationCard'
 import HeroPage from '../components/sections/HeroPage'
 
 function Destinations() {
+
+  const [search, setSearch] = useState('')
+
+  const filteredDestinations = destinations.filter((item) => {
+    const keyword = search.toLowerCase()
+
+    return (
+      item.title.toLowerCase().includes(keyword) ||
+      item.location?.toLowerCase().includes(keyword) ||
+      item.category?.toLowerCase().includes(keyword)
+    )
+  })
 
   return (
 
@@ -41,6 +55,8 @@ function Destinations() {
           <input
             type="text"
             placeholder="Search destination..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             className="
               flex-1
               h-14
@@ -52,6 +68,13 @@ function Destinations() {
           />
 
           <button
+            onClick={() => {
+              document
+                .getElementById('destination-list')
+                ?.scrollIntoView({
+                  behavior: 'smooth'
+                })
+            }}
             className="
               bg-primary
               text-white
@@ -69,7 +92,10 @@ function Destinations() {
       </HeroPage>
 
       {/* DESTINATION GRID */}
-      <section className="py-20 bg-white">
+      <section
+        id="destination-list"
+        className="py-20 bg-white"
+      >
 
         <div className="max-w-7xl mx-auto px-6">
 
@@ -93,14 +119,20 @@ function Destinations() {
           {/* Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-            {destinations.map((item) => (
-
+            {filteredDestinations.map((item) => (
               <DestinationCard
                 key={item.id}
                 item={item}
               />
-
             ))}
+
+            {filteredDestinations.length === 0 && (
+              <div className="text-center py-10">
+                <p className="text-gray-500">
+                  No destinations found.
+                </p>
+              </div>
+            )}
 
           </div>
 

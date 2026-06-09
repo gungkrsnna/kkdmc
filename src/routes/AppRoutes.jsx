@@ -10,6 +10,7 @@ import Destinations from '../pages/Destinations'
 import Transport from '../pages/Transport'
 import Login from '../pages/Login'
 import Register from '../pages/Register'
+import AboutUs from '../pages/AboutUs'
 
 function AppRoutes() {
   return (
@@ -37,34 +38,39 @@ function AppRoutes() {
       />
 
       <Route
-  path="/activities"
-  element={<Activities />}
-/>
+        path="/activities"
+        element={<Activities />}
+      />
 
-<Route
-  path="/booking/:id"
-  element={<Booking />}
-/>
+      <Route
+        path="/booking/:id"
+        element={<Booking />}
+      />
 
-<Route
-  path="/checkout/:id"
-  element={<Checkout />}
-/>
+      <Route
+        path="/checkout/:id"
+        element={<Checkout />}
+      />
 
-<Route
-  path="/destination/:slug"
-  element={<DestinationDetail />}
-/>
+      <Route
+        path="/destination/:slug"
+        element={<DestinationDetail />}
+      />
 
-<Route
-  path="/destinations"
-  element={<Destinations />}
-/>
+      <Route
+        path="/destinations"
+        element={<Destinations />}
+      />
 
-<Route
-  path="/transport"
-  element={<Transport />}
-/>
+      <Route
+        path="/transport"
+        element={<Transport />}
+      />
+
+      <Route
+        path="/about"
+        element={<AboutUs />}
+      />
 
     </Routes>
 

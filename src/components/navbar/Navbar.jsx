@@ -79,10 +79,10 @@ function Navbar() {
       `
     }
   >
-    Destinations
+    Products
   </NavLink>
 
-  <NavLink
+  {/* <NavLink
     to="/activities"
     className={({ isActive }) =>
       `
@@ -98,7 +98,7 @@ function Navbar() {
     }
   >
     Activities
-  </NavLink>
+  </NavLink> */}
 
   <NavLink
     to="/transport"
@@ -116,6 +116,24 @@ function Navbar() {
     }
   >
     Transport
+  </NavLink>
+
+  <NavLink
+    to="/about"
+    className={({ isActive }) =>
+      `
+        transition
+        relative
+        pb-1
+
+        ${isActive
+          ? 'text-primary'
+          : 'text-gray-700 hover:text-primary'
+        }
+      `
+    }
+  >
+    About Us
   </NavLink>
 
 </div>
@@ -261,10 +279,10 @@ function Navbar() {
       `
     }
   >
-    Destinations
+    Products
   </NavLink>
 
-  <NavLink
+  {/* <NavLink
     to="/activities"
     className={({ isActive }) =>
       `
@@ -281,7 +299,7 @@ function Navbar() {
     }
   >
     Activities
-  </NavLink>
+  </NavLink> */}
 
   <NavLink
     to="/transport"
@@ -300,6 +318,25 @@ function Navbar() {
     }
   >
     Transport
+  </NavLink>
+
+  <NavLink
+    to="/about"
+    className={({ isActive }) =>
+      `
+        py-4
+        border-b
+        font-medium
+        transition
+
+        ${isActive
+          ? 'text-primary'
+          : 'text-gray-700'
+        }
+      `
+    }
+  >
+    About Us
   </NavLink>
 
 </div>

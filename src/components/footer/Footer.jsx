@@ -2,122 +2,220 @@ import {
   FaInstagram,
   FaFacebookF,
   FaTwitter,
-} from 'react-icons/fa'
+  FaWhatsapp,
+} from "react-icons/fa";
 
-import Logo from '../../assets/logo/logo.png'
+import { Link } from "react-router-dom";
+
+import Logo from "../../assets/logo/logo-footer.png";
 
 function Footer() {
   return (
-
     <footer className="bg-dark text-white pt-24 pb-10">
-
       <div className="max-w-7xl mx-auto px-6">
 
-        {/* Top */}
+        {/* MAIN FOOTER */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 pb-16 border-b border-white/10">
 
-          {/* Brand */}
-          {/* Brand */}
-<div className="lg:col-span-2">
+          {/* BRAND */}
+          <div className="lg:col-span-2">
 
-  {/* Logo */}
-  <img
-    src={Logo}
-    alt="KK DMC"
-    className="h-20 w-auto object-contain mb-6"
-  />
+            <img
+              src={Logo}
+              alt="KK DMC"
+              className="h-20 w-auto object-contain mb-6"
+            />
 
-  {/* Company Name */}
-  <h2 className="text-3xl font-black mb-4">
-    KK DMC
-  </h2>
+            <h2 className="text-3xl font-black mb-4">
+              KK DMC
+            </h2>
 
-  {/* Description */}
-  <p className="text-gray-400 leading-relaxed mb-8 max-w-md">
+            <p className="text-gray-400 leading-relaxed mb-8 max-w-md">
+              Premium Bali destination management company
+              providing unforgettable travel experiences,
+              curated tours, transportation, and luxury
+              island adventures.
+            </p>
 
-    Premium Bali destination management company
-    providing unforgettable travel experiences,
-    curated tours, transportation, and luxury
-    island adventures.
+            <div className="flex items-center gap-4">
 
-  </p>
+              <a
+                href="#"
+                className="
+                  w-12 h-12
+                  rounded-2xl
+                  bg-white/10
+                  flex
+                  items-center
+                  justify-center
+                  hover:bg-primary
+                  transition
+                "
+              >
+                <FaInstagram />
+              </a>
 
-  {/* Social */}
-  <div className="flex items-center gap-4">
+              <a
+                href="#"
+                className="
+                  w-12 h-12
+                  rounded-2xl
+                  bg-white/10
+                  flex
+                  items-center
+                  justify-center
+                  hover:bg-primary
+                  transition
+                "
+              >
+                <FaFacebookF />
+              </a>
 
-    <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center hover:bg-primary transition cursor-pointer">
-      <FaInstagram />
-    </div>
+              <a
+                href="#"
+                className="
+                  w-12 h-12
+                  rounded-2xl
+                  bg-white/10
+                  flex
+                  items-center
+                  justify-center
+                  hover:bg-primary
+                  transition
+                "
+              >
+                <FaTwitter />
+              </a>
 
-    <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center hover:bg-primary transition cursor-pointer">
-      <FaFacebookF />
-    </div>
+            </div>
 
-    <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center hover:bg-primary transition cursor-pointer">
-      <FaTwitter />
-    </div>
+          </div>
 
-  </div>
-
-</div>
-
-          {/* Company */}
+          {/* QUICK LINKS */}
           <div>
 
             <h3 className="font-bold text-lg mb-6">
-              Company
+              Quick Links
             </h3>
 
             <ul className="space-y-4 text-gray-400">
 
-              <li>About Us</li>
-              <li>Careers</li>
-              <li>Blog</li>
-              <li>Contact</li>
+              <li>
+                <Link
+                  to="/"
+                  className="hover:text-white transition"
+                >
+                  Home
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/about"
+                  className="hover:text-white transition"
+                >
+                  About Us
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/destinations"
+                  className="hover:text-white transition"
+                >
+                  Destinations
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/activities"
+                  className="hover:text-white transition"
+                >
+                  Activities
+                </Link>
+              </li>
 
             </ul>
 
           </div>
 
-          {/* Support */}
+          {/* TOP DESTINATIONS */}
           <div>
 
             <h3 className="font-bold text-lg mb-6">
-              Support
-            </h3>
-
-            <ul className="space-y-4 text-gray-400">
-
-              <li>Help Center</li>
-              <li>Privacy Policy</li>
-              <li>Terms & Conditions</li>
-              <li>FAQs</li>
-
-            </ul>
-
-          </div>
-
-          {/* Destination */}
-          <div>
-
-            <h3 className="font-bold text-lg mb-6">
-              Destination
+              Top Destinations
             </h3>
 
             <ul className="space-y-4 text-gray-400">
 
               <li>Ubud</li>
               <li>Uluwatu</li>
-              <li>Canggu</li>
               <li>Nusa Penida</li>
+              <li>Canggu</li>
+              <li>Kintamani</li>
 
             </ul>
 
           </div>
 
+          {/* CONTACT */}
+          <div>
+
+            <h3 className="font-bold text-lg mb-6">
+              Contact Us
+            </h3>
+
+            <ul className="space-y-4 text-gray-400 text-sm mb-6">
+
+              <li>info@kkdmc.com</li>
+              <li>+62 812 3456 7890</li>
+              <li>Bali, Indonesia</li>
+              <li>Mon - Fri, 08:00 - 18:00</li>
+
+            </ul>
+
+            {/* Reservation */}
+            <Link
+              to="/reservation"
+              className="
+                block
+                text-center
+                bg-primary
+                py-3
+                rounded-xl
+                font-semibold
+                mb-3
+                hover:opacity-90
+                transition
+              "
+            >
+              Reservation
+            </Link>
+
+            {/* Inquiry */}
+            <Link
+              to="/inquiry"
+              className="
+                block
+                text-center
+                border
+                border-white/20
+                py-3
+                rounded-xl
+                font-semibold
+                hover:bg-white/10
+                transition
+              "
+            >
+              Inquiry
+            </Link>
+
+          </div>
+
         </div>
 
-        {/* Bottom */}
+        {/* BOTTOM */}
         <div className="pt-10 flex flex-col md:flex-row items-center justify-between gap-5">
 
           <p className="text-gray-500 text-sm">
@@ -125,15 +223,14 @@ function Footer() {
           </p>
 
           <p className="text-gray-500 text-sm">
-            Designed with premium travel experience.
+            Designed for premium Bali travel experiences.
           </p>
 
         </div>
 
       </div>
-
     </footer>
-  )
+  );
 }
 
-export default Footer
+export default Footer;
