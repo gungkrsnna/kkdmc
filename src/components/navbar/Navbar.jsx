@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import {
   FaGlobeAsia,
@@ -16,9 +16,39 @@ import {
 
 import Logo from '../../assets/logo/logo.png'
 
-function Navbar() {
+import { useEffect, useState } from 'react'
+import { supabase } from '../../lib/supabase'
 
+function Navbar() {
+  const [user, setUser] = useState(null)
   const [open, setOpen] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
+
+  useEffect(() => {
+
+    const getUser = async () => {
+
+      const {
+        data: { user }
+      } = await supabase.auth.getUser()
+
+      setUser(user)
+
+    }
+
+    getUser()
+
+  }, [])
+
+  const handleLogout = async () => {
+
+    await supabase.auth.signOut()
+
+    setUser(null)
+
+    navigate('/')
+
+  }
 
   return (
 
@@ -100,7 +130,7 @@ function Navbar() {
     Activities
   </NavLink> */}
 
-  <NavLink
+  {/* <NavLink
     to="/transport"
     className={({ isActive }) =>
       `
@@ -116,7 +146,7 @@ function Navbar() {
     }
   >
     Transport
-  </NavLink>
+  </NavLink> */}
 
   <NavLink
     to="/about"
@@ -144,37 +174,178 @@ function Navbar() {
             {/* Desktop Auth */}
             <div className="hidden lg:flex items-center gap-3">
 
-              <Link
-  to="/login"
-  className="
-    text-sm
-    font-medium
-    text-gray-700
-    hover:text-primary
-    transition
-  "
->
-  Login
-</Link>
+              {!user ? (
 
-<Link
-  to="/register"
-  className="
-    bg-primary
-    hover:opacity-90
-    transition
-    text-white
-    px-5
-    h-11
-    rounded-xl
-    text-sm
-    font-semibold
-    flex
-    items-center
-  "
->
-  Register
-</Link>
+                <>
+                  <Link
+                    to="/login"
+                    className="
+                      text-sm
+                      font-medium
+                      text-gray-700
+                      hover:text-primary
+                    "
+                  >
+                    Login
+                  </Link>
+
+                  <Link
+                    to="/register"
+                    className="
+                      bg-primary
+                      text-white
+                      px-5
+                      h-11
+                      rounded-xl
+                      text-sm
+                      font-semibold
+                      flex
+                      items-center
+                    "
+                  >
+                    Register
+                  </Link>
+                </>
+
+              ) : (
+
+                <div className="relative">
+
+                  <button
+                    onClick={() => setProfileOpen(!profileOpen)}
+                    className="
+                      flex
+                      items-center
+                      gap-2
+                      text-sm
+                      font-medium
+                      text-gray-700
+                      hover:text-primary
+                      transition
+                    "
+                  >
+
+                    <div
+                      className="
+                        w-9
+                        h-9
+                        rounded-full
+                        bg-primary
+                        text-white
+                        flex
+                        items-center
+                        justify-center
+                        text-sm
+                        font-semibold
+                      "
+                    >
+                      {user.user_metadata?.full_name?.charAt(0)}
+                    </div>
+
+                    <span>
+                      {user.user_metadata?.full_name?.split(' ')[0]}
+                    </span>
+
+                  </button>
+
+                  {profileOpen && (
+
+                    <div
+                      className="
+                        absolute
+                        top-full
+                        right-0
+                        mt-3
+                        w-72
+                        bg-white
+                        rounded-2xl
+                        shadow-xl
+                        border
+                        overflow-hidden
+                        z-50
+                      "
+                    >
+
+                      {/* User Info */}
+                      <div className="p-5 border-b">
+
+                        <p className="font-semibold">
+                          {user.user_metadata?.full_name}
+                        </p>
+
+                        <p className="text-sm text-gray-500 mt-1">
+                          {user.email}
+                        </p>
+
+                      </div>
+
+                      {/* Menu */}
+                      <div className="py-2">
+
+                        <Link
+                          to="/account/bookings"
+                          className="
+                            block
+                            px-5
+                            py-3
+                            hover:bg-gray-50
+                          "
+                        >
+                          My Bookings
+                        </Link>
+
+                        <Link
+                          to="/my-reservations"
+                          className="
+                            block
+                            px-5
+                            py-3
+                            hover:bg-gray-50
+                          "
+                        >
+                          My Reservations
+                        </Link>
+
+                        <Link
+                          to="/my-inquiries"
+                          className="
+                            block
+                            px-5
+                            py-3
+                            hover:bg-gray-50
+                          "
+                        >
+                          My Inquiries
+                        </Link>
+
+                      </div>
+
+                      {/* Logout */}
+                      <div className="border-t p-3">
+
+                        <button
+                          onClick={handleLogout}
+                          className="
+                            w-full
+                            h-11
+                            rounded-xl
+                            text-red-600
+                            hover:bg-red-50
+                            font-medium
+                          "
+                        >
+                          Logout
+                        </button>
+
+                      </div>
+
+                    </div>
+
+                  )}
+
+                </div>
+
+              )}
 
             </div>
 
@@ -244,6 +415,54 @@ function Navbar() {
         {/* Menu */}
         <div className="p-5 flex flex-col">
 
+        {user && (
+
+  <div
+    className="
+      mb-5
+      pb-5
+      border-b
+    "
+  >
+
+    <div className="flex items-center gap-3">
+
+      <div
+        className="
+          w-12
+          h-12
+          rounded-full
+          bg-primary
+          text-white
+          flex
+          items-center
+          justify-center
+          font-semibold
+        "
+      >
+        {user.user_metadata?.full_name
+          ?.charAt(0)
+          ?.toUpperCase()}
+      </div>
+
+      <div>
+
+        <p className="font-semibold">
+          {user.user_metadata?.full_name}
+        </p>
+
+        <p className="text-sm text-gray-500">
+          {user.email}
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+)}
+
   <NavLink
     to="/"
     className={({ isActive }) =>
@@ -301,7 +520,7 @@ function Navbar() {
     Activities
   </NavLink> */}
 
-  <NavLink
+  {/* <NavLink
     to="/transport"
     className={({ isActive }) =>
       `
@@ -318,7 +537,7 @@ function Navbar() {
     }
   >
     Transport
-  </NavLink>
+  </NavLink> */}
 
   <NavLink
     to="/about"
@@ -339,48 +558,126 @@ function Navbar() {
     About Us
   </NavLink>
 
+  {user && (
+
+  <>
+    <div className="my-4 border-t" />
+
+    <NavLink
+      to="/profile"
+      onClick={() => setOpen(false)}
+      className="
+        py-4
+        border-b
+        font-medium
+      "
+    >
+      My Profile
+    </NavLink>
+
+    <NavLink
+      to="/my-reservations"
+      onClick={() => setOpen(false)}
+      className="
+        py-4
+        border-b
+        font-medium
+      "
+    >
+      My Reservations
+    </NavLink>
+
+    <NavLink
+      to="/my-inquiries"
+      onClick={() => setOpen(false)}
+      className="
+        py-4
+        border-b
+        font-medium
+      "
+    >
+      My Inquiries
+    </NavLink>
+
+  </>
+
+)}
+
 </div>
 
         {/* Bottom */}
         <div className="absolute bottom-0 left-0 w-full p-5 border-t bg-white">
 
-          <div className="grid grid-cols-2 gap-3">
+          {!user ? (
 
-            <Link
-  to="/login"
-  onClick={() => setOpen(false)}
-  className="
-    h-12
-    rounded-xl
-    border
-    border-gray-300
-    font-semibold
-    flex
-    items-center
-    justify-center
-  "
->
-  Login
-</Link>
+            <div className="grid grid-cols-2 gap-3">
 
-<Link
-  to="/register"
-  onClick={() => setOpen(false)}
-  className="
-    h-12
-    rounded-xl
-    bg-primary
-    text-white
-    font-semibold
-    flex
-    items-center
-    justify-center
-  "
->
-  Register
-</Link>
+              <Link
+                to="/login"
+                onClick={() => setOpen(false)}
+                className="
+                  h-12
+                  rounded-xl
+                  border
+                  border-gray-300
+                  font-semibold
+                  flex
+                  items-center
+                  justify-center
+                "
+              >
+                Login
+              </Link>
 
-          </div>
+              <Link
+                to="/register"
+                onClick={() => setOpen(false)}
+                className="
+                  h-12
+                  rounded-xl
+                  bg-primary
+                  text-white
+                  font-semibold
+                  flex
+                  items-center
+                  justify-center
+                "
+              >
+                Register
+              </Link>
+
+            </div>
+
+          ) : (
+
+            <div className="space-y-3">
+
+              <div
+                className="
+                  text-center
+                  font-semibold
+                "
+              >
+                {user.user_metadata?.full_name ||
+                  user.email}
+              </div>
+
+              <button
+                onClick={handleLogout}
+                className="
+                  w-full
+                  h-12
+                  rounded-xl
+                  border
+                  font-semibold
+                "
+              >
+                Logout
+              </button>
+
+            </div>
+
+          )}
 
         </div>
 

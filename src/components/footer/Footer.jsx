@@ -26,9 +26,9 @@ function Footer() {
               className="h-20 w-auto object-contain mb-6"
             />
 
-            <h2 className="text-3xl font-black mb-4">
+            {/* <h2 className="text-3xl font-black mb-4">
               KK DMC
-            </h2>
+            </h2> */}
 
             <p className="text-gray-400 leading-relaxed mb-8 max-w-md">
               Premium Bali destination management company

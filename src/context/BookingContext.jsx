@@ -2,31 +2,42 @@ import {
   createContext,
   useContext,
   useState,
-} from 'react'
+} from "react";
 
-const BookingContext = createContext()
+const BookingContext =
+  createContext();
 
-export function BookingProvider({ children }) {
+export function BookingProvider({
+  children,
+}) {
 
-  const [bookingData, setBookingData] = useState({
+  const [bookingData,
+    setBookingData] =
+    useState({
 
-    activity: null,
+      activityId: null,
+      activitySlug: "",
+      activityTitle: "",
+      activityImage: "",
+      activityDescription: "",
 
-    selectedPackage: null,
+      packageId: null,
+      packageName: "",
+      packagePrice: 0,
 
-    travelDate: '',
+      travelDate: "",
 
-    guests: 2,
+      guests: 2,
 
-    traveler: {
-      fullName: '',
-      email: '',
-      phone: '',
-    },
+      traveler: {
+        fullName: "",
+        email: "",
+        phone: "",
+      },
 
-    totalPrice: 0,
+      totalPrice: 0,
 
-  })
+    });
 
   return (
 
@@ -41,9 +52,14 @@ export function BookingProvider({ children }) {
 
     </BookingContext.Provider>
 
-  )
+  );
+
 }
 
 export function useBooking() {
-  return useContext(BookingContext)
+
+  return useContext(
+    BookingContext
+  );
+
 }

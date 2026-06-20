@@ -1,6 +1,10 @@
-import MainLayout from '../layouts/MainLayout'
+import {
+    useEffect,
+    useState,
+  } from "react";
+ 
 
-import activities from '../data/activities'
+import MainLayout from '../layouts/MainLayout'
 
 import ActivityCard from '../components/cards/ActivityCard'
 
@@ -8,22 +12,242 @@ import HeroPage from '../components/sections/HeroPage'
 
 function Activities() {
 
+  const [hero, setHero] =
+  useState(null);
+
+  const [activities, setActivities] =
+    useState([]);
+
+  const [filteredActivities, setFilteredActivities] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [search, setSearch] =
+    useState("");
+
+  const [sort, setSort] =
+    useState("");
+
+  const [selectedCategory, setSelectedCategory] =
+    useState("");
+
+  const [categories, setCategories] =
+    useState([]);
+
+  const [maxAvailablePrice, setMaxAvailablePrice] =
+    useState(0);
+
+  const [maxPrice, setMaxPrice] =
+    useState(0);
+
+const loadCategories =
+  async () => {
+
+    const response =
+      await fetch(
+        "https://kkdmc.gladiatoraruna.com/api/categories"
+      );
+
+    const data =
+      await response.json();
+
+    setCategories(data);
+
+  };
+
+const loadHero =
+  async () => {
+
+    try {
+
+      const response =
+        await fetch(
+          "https://kkdmc.gladiatoraruna.com/api/home-sections/activities_hero"
+        );
+
+      const data =
+        await response.json();
+
+      setHero(data);
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+  };
+
+useEffect(() => {
+
+  loadActivities();
+  loadCategories();
+  loadHero();
+
+}, []);
+
+
+const loadActivities =
+  async () => {
+
+    try {
+
+      const response =
+        await fetch(
+          "https://kkdmc.gladiatoraruna.com/api/tour-packages"
+        );
+
+      const data =
+        await response.json();
+
+      setActivities(data);
+      setFilteredActivities(data);
+
+      const highestPrice =
+        Math.max(
+          ...data.map(
+            item =>
+              item.start_price || 0
+          )
+        );
+
+      setMaxAvailablePrice(
+        highestPrice
+      );
+
+      setMaxPrice(
+        highestPrice
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  };
+
+  useEffect(() => {
+
+    let result =
+      [...activities];
+
+    if (search) {
+
+      result =
+        result.filter(
+          (item) =>
+            item.title
+              ?.toLowerCase()
+              .includes(
+                search.toLowerCase()
+              )
+        );
+
+    }
+
+    if (selectedCategory) {
+
+      result =
+        result.filter(
+          (item) =>
+            item.category_id ===
+            selectedCategory
+        );
+
+    }
+
+    if (maxPrice) {
+
+      result =
+        result.filter(
+          (item) =>
+            item.start_price <=
+            maxPrice
+        );
+
+    }
+
+    if (
+      sort ===
+      "price_low"
+    ) {
+
+      result.sort(
+        (a, b) =>
+          a.start_price -
+          b.start_price
+      );
+
+    }
+
+    if (
+      sort ===
+      "price_high"
+    ) {
+
+      result.sort(
+        (a, b) =>
+          b.start_price -
+          a.start_price
+      );
+
+    }
+
+    if (
+      sort ===
+      "rating"
+    ) {
+
+      result.sort(
+        (a, b) =>
+          b.rating -
+          a.rating
+      );
+
+    }
+
+    setFilteredActivities(
+      result
+    );
+
+  }, [
+    activities,
+    search,
+    selectedCategory,
+    sort,
+    maxPrice
+  ]);
+
   return (
 
     <MainLayout>
 
       {/* Hero */}
       <HeroPage
-        badge="Explore Activities"
-        title="Find Amazing Experiences In Bali"
-        description="
-          Explore premium tours, adventure activities,
-          private trips, transport, and unforgettable
-          Bali experiences.
-        "
-        image="https://images.unsplash.com/photo-1537996194471-e657df975ab4"
-      >
-      </HeroPage>
+        badge={
+          hero?.badge ||
+          "Explore Activities"
+        }
+        title={
+          hero?.title ||
+          "Find Amazing Experiences In Bali"
+        }
+        description={
+          hero?.description ||
+          ""
+        }
+        image={
+          hero?.image_url ||
+          "https://images.unsplash.com/photo-1537996194471-e657df975ab4"
+        }
+      />
 
       {/* Content */}
       <section className="py-16 bg-white">
@@ -58,6 +282,12 @@ function Activities() {
 
                   <input
                     type="text"
+                    value={search}
+                    onChange={(e) =>
+                      setSearch(
+                        e.target.value
+                      )
+                    }
                     placeholder="Search activity"
                     className="
                       w-full
@@ -78,25 +308,55 @@ function Activities() {
                     Category
                   </label>
 
-                  <div className="space-y-3 text-gray-600">
+                  <div className="space-y-3">
 
-                    <div>
-                      Adventure
-                    </div>
+  <button
+    onClick={() =>
+      setSelectedCategory("")
+    }
+    className={`
+      block
+      text-left
+      hover:text-primary
+      ${
+        selectedCategory === ""
+          ? "font-bold text-primary"
+          : ""
+      }
+    `}
+  >
+    All Categories
+  </button>
 
-                    <div>
-                      Nature
-                    </div>
+  {categories.map(
+    (category) => (
 
-                    <div>
-                      Watersport
-                    </div>
+      <button
+        key={category.id}
+        onClick={() =>
+          setSelectedCategory(
+            category.id
+          )
+        }
+        className={`
+          block
+          text-left
+          hover:text-primary
+          ${
+            selectedCategory ===
+            category.id
+              ? "font-bold text-primary"
+              : ""
+          }
+        `}
+      >
+        {category.title}
+      </button>
 
-                    <div>
-                      Private Tour
-                    </div>
+    )
+  )}
 
-                  </div>
+</div>
 
                 </div>
 
@@ -109,13 +369,29 @@ function Activities() {
 
                   <input
                     type="range"
+                    min="0"
+                    max={maxAvailablePrice}
+                    step="50000"
+                    value={maxPrice}
+                    onChange={(e) =>
+                      setMaxPrice(
+                        Number(e.target.value)
+                      )
+                    }
                     className="w-full"
                   />
+
+                  <p className="mt-2 text-sm text-gray-600">
+                    Up to Rp{" "}
+                    {maxPrice.toLocaleString(
+                      "id-ID"
+                    )}
+                  </p>
 
                 </div>
 
                 {/* Rating */}
-                <div>
+                {/* <div>
 
                   <label className="font-semibold mb-4 block">
                     Rating
@@ -129,7 +405,7 @@ function Activities() {
 
                   </div>
 
-                </div>
+                </div> */}
 
               </div>
 
@@ -143,11 +419,17 @@ function Activities() {
 
                 <p className="text-gray-500">
 
-                  Showing {activities.length} activities
+                  Showing {filteredActivities.length} activities
 
                 </p>
 
                 <select
+                  value={sort}
+                  onChange={(e) =>
+                    setSort(
+                      e.target.value
+                    )
+                  }
                   className="
                     border
                     rounded-2xl
@@ -156,20 +438,19 @@ function Activities() {
                     outline-none
                   "
                 >
-
-                  <option>
-                    Sort by Popularity
+                  <option value="">
+                    Sort by
                   </option>
 
-                  <option>
+                  <option value="price_low">
                     Price Low to High
                   </option>
 
-                  <option>
+                  <option value="price_high">
                     Price High to Low
                   </option>
 
-                  <option>
+                  <option value="rating">
                     Top Rated
                   </option>
 
@@ -180,19 +461,21 @@ function Activities() {
               {/* Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
 
-                {activities.map((item) => (
+                {filteredActivities.map(
+                  (item) => (
 
-                  <ActivityCard
-                    key={item.id}
-                    item={item}
-                  />
+                    <ActivityCard
+                      key={item.id}
+                      item={item}
+                    />
 
-                ))}
+                  )
+                )}
 
               </div>
 
               {/* Load More */}
-              <div className="text-center mt-16">
+              {/* <div className="text-center mt-16">
 
                 <button
                   className="
@@ -209,7 +492,7 @@ function Activities() {
                   Load More
                 </button>
 
-              </div>
+              </div> */}
 
             </div>
 

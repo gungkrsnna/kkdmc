@@ -1,7 +1,71 @@
-import { Link } from 'react-router-dom'
 import Logo from '../assets/logo/logo.png'
+import { Link, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { supabase }
+from '../lib/supabase'
+import axios from 'axios'
 
 function Register() {
+
+  const navigate = useNavigate()
+
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  })
+
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    })
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    setError('')
+
+    if (
+      formData.password !==
+      formData.confirmPassword
+    ) {
+      setError(
+        'Password confirmation does not match'
+      )
+      return
+    }
+
+    try {
+      setLoading(true)
+
+      const { error } =
+        await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {
+            data: {
+              full_name:
+                formData.name,
+            },
+          },
+        })
+
+      if (error) throw error
+
+      navigate('/verify-email')
+    } catch (error) {
+      setError(error.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div
       className="
@@ -62,10 +126,13 @@ function Register() {
         </div>
 
         {/* Form */}
-        <form className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
 
           <input
             type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
             placeholder="Full Name"
             className="
               w-full
@@ -84,6 +151,9 @@ function Register() {
 
           <input
             type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
             placeholder="Email Address"
             className="
               w-full
@@ -102,6 +172,9 @@ function Register() {
 
           <input
             type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
             placeholder="Password"
             className="
               w-full
@@ -120,6 +193,9 @@ function Register() {
 
           <input
             type="password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
             placeholder="Confirm Password"
             className="
               w-full
@@ -136,8 +212,25 @@ function Register() {
             "
           />
 
+          {error && (
+            <div
+              className="
+                bg-red-50
+                border
+                border-red-200
+                text-red-600
+                p-4
+                rounded-2xl
+                text-sm
+              "
+            >
+              {error}
+            </div>
+          )}
+
           <button
             type="submit"
+            disabled={loading}
             className="
               w-full
               h-14
@@ -150,7 +243,9 @@ function Register() {
               transition
             "
           >
-            Create Account
+            {loading
+              ? 'Creating Account...'
+              : 'Create Account'}
           </button>
 
         </form>

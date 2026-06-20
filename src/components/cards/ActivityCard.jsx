@@ -6,7 +6,7 @@ function ActivityCard({ item }) {
   return (
 
     <Link
-      to={`/activity/${item.id}`}
+      to={`/activity/${item.slug}`}
       className="
         group
         bg-white
@@ -25,7 +25,7 @@ function ActivityCard({ item }) {
       <div className="relative overflow-hidden">
 
         <img
-          src={item.image}
+          src={item.image_url}
           alt={item.title}
           className="
             w-full
@@ -41,7 +41,7 @@ function ActivityCard({ item }) {
         <div className="absolute top-4 left-4">
 
           <span className="bg-primary text-white text-xs font-semibold px-3 py-2 rounded-full">
-            {item.badge}
+            {item.featured_badge || "Popular"}
           </span>
 
         </div>
@@ -77,13 +77,13 @@ function ActivityCard({ item }) {
             <FaStar />
 
             <span className="font-bold text-dark">
-              {item.rating}
+            {item.rating || 0}
             </span>
 
           </div>
 
           <span className="text-gray-500 text-sm">
-            ({item.reviews} reviews)
+          ({item.total_reviews || 0} reviews)
           </span>
 
         </div>
@@ -98,7 +98,9 @@ function ActivityCard({ item }) {
             </p>
 
             <h4 className="text-xl font-semibold text-primary">
-            Rp {item.price.toLocaleString('id-ID')}
+            Rp {Number(
+              item.start_price || 0
+            ).toLocaleString("id-ID")}
             </h4>
 
         </div>

@@ -1,41 +1,187 @@
-import { useParams } from 'react-router-dom'
-import { useBooking } from '../context/BookingContext'
-import { useEffect } from 'react'
+import {
+  useEffect,
+  useState,
+} from "react";
 
-import MainLayout from '../layouts/MainLayout'
-import activities from '../data/activities'
-import { Link } from 'react-router-dom'
+import {
+  Link,
+  useNavigate,
+} from "react-router-dom";
+
+import MainLayout from "../layouts/MainLayout";
+
+import { useParams } from "react-router-dom";
 
 function Booking() {
 
-  const { id } = useParams()
+  const { id } = useParams();
 
-  const { bookingData, setBookingData } = useBooking()
+  const [booking, setBooking] =
+  useState(null);
 
-  const activity = activities.find(
-    (item) => item.id === Number(id)
-  )
+  const [loading, setLoading] =
+    useState(true);
+
+    const [errors, setErrors] =
+  useState({});
+
+  const navigate =
+    useNavigate();
+
+  const validateForm = () => {
+
+    const newErrors = {};
+  
+    if (!traveler.fullName.trim()) {
+      newErrors.fullName =
+        "Full name is required";
+    }
+  
+    if (!traveler.email.trim()) {
+      newErrors.email =
+        "Email is required";
+    }
+  
+    if (!traveler.phone.trim()) {
+      newErrors.phone =
+        "Phone number is required";
+    }
+  
+    setErrors(newErrors);
+  
+    return (
+      Object.keys(newErrors)
+        .length === 0
+    );
+  
+  };
+
+  const [traveler, setTraveler] =
+    useState({
+      fullName: "",
+      email: "",
+      phone: "",
+    });
 
   useEffect(() => {
 
-  if (!bookingData.selectedPackage) {
+    loadBooking();
+  
+  }, [id]);
 
-    setBookingData({
-      ...bookingData,
+  useEffect(() => {
 
-      activity,
+    if (booking) {
+  
+      setTraveler({
+        fullName:
+          booking.customer_name || "",
+  
+        email:
+          booking.customer_email || "",
+  
+        phone:
+          booking.customer_whatsapp || "",
+      });
+  
+    }
+  
+  }, [booking]);
 
-      selectedPackage: activity.packages[0],
+  const handleContinueCheckout =
+  async () => {
 
-      totalPrice: activity.packages[0].price * bookingData.guests,
-    })
-  }
+    if (!validateForm()) {
+      return;
+    }
 
-}, [])
+    try {
 
-  if (!activity) {
-    return null
-  }
+      await fetch(
+        `https://kkdmc.gladiatoraruna.com/api/tour-bookings/${booking.id}`,
+        {
+          method: "PUT",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+
+          body: JSON.stringify({
+            customer_name:
+              traveler.fullName,
+
+            customer_email:
+              traveler.email,
+
+            customer_whatsapp:
+              traveler.phone,
+          }),
+        }
+      );
+
+      navigate(
+        `/checkout/${booking.id}`
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+  };
+  
+  const loadBooking =
+    async () => {
+  
+      try {
+  
+        const response =
+          await fetch(
+            `https://kkdmc.gladiatoraruna.com/api/tour-bookings/${id}`
+          );
+  
+        const data =
+          await response.json();
+  
+        setBooking(data);
+  
+      } catch (error) {
+  
+        console.error(error);
+  
+      } finally {
+  
+        setLoading(false);
+  
+      }
+  
+    };
+
+    if (loading) {
+
+      return (
+        <MainLayout>
+          <div className="py-40 text-center">
+            Loading...
+          </div>
+        </MainLayout>
+      );
+    
+    }
+    
+    if (!booking) {
+    
+      return (
+        <MainLayout>
+          <div className="py-40 text-center">
+            Booking Not Found
+          </div>
+        </MainLayout>
+      );
+    
+    }
 
   return (
 
@@ -73,8 +219,8 @@ function Booking() {
                 <div className="flex flex-col md:flex-row gap-6">
 
                   <img
-                    src={activity.image}
-                    alt={activity.title}
+                    src={booking.tour_packages.image_url}
+                    alt={booking.tour_packages.title}
                     className="
                       w-full
                       md:w-[260px]
@@ -86,21 +232,29 @@ function Booking() {
 
                   <div>
 
-                    <span className="bg-primary text-white px-4 py-2 rounded-full text-sm font-semibold inline-block mb-4">
-                      {activity.badge}
-                    </span>
-
                     <h3 className="text-3xl font-black mb-4">
-
-                      {activity.title}
-
+                      {booking.tour_packages.title}
                     </h3>
 
-                    <p className="text-gray-500 leading-relaxed">
-
-                      {activity.description}
-
+                    <p className="text-gray-500 leading-relaxed mb-4">
+                      {booking.tour_packages.description}
                     </p>
+
+                    <div className="flex flex-wrap gap-3">
+
+                      <span className="bg-soft px-4 py-2 rounded-xl text-sm">
+                        {booking.package_options.name}
+                      </span>
+
+                      <span className="bg-soft px-4 py-2 rounded-xl text-sm">
+                        {booking.guests} Guests
+                      </span>
+
+                      <span className="bg-soft px-4 py-2 rounded-xl text-sm">
+                        {booking.travel_date}
+                      </span>
+
+                    </div>
 
                   </div>
 
@@ -108,182 +262,7 @@ function Booking() {
 
               </div>
 
-              {/* Package Selection */}
-<div className="bg-white rounded-3xl p-8 shadow-card">
-
-  <h2 className="text-2xl font-black mb-8">
-    Select Package
-  </h2>
-
-  <div className="space-y-5">
-
-    {activity.packages.map((pkg) => {
-
-      const isSelected =
-        bookingData.selectedPackage?.id === pkg.id
-
-      return (
-
-        <div
-          key={pkg.id}
-
-          onClick={() =>
-            setBookingData({
-              ...bookingData,
-
-              selectedPackage: pkg,
-
-              totalPrice:
-                pkg.price * bookingData.guests,
-            })
-          }
-
-          className={`
-            border
-            rounded-3xl
-            p-6
-            cursor-pointer
-            transition
-
-            ${isSelected
-              ? 'border-primary bg-orange-50'
-              : 'hover:border-primary'
-            }
-          `}
-        >
-
-          <div className="flex items-center justify-between mb-5">
-
-            <div>
-
-              <h3 className="text-xl font-bold mb-2">
-                {pkg.name}
-              </h3>
-
-              <p className="text-gray-500 text-sm">
-                Premium Bali experience package
-              </p>
-
-            </div>
-
-            <div className="text-right">
-
-              <p className="text-sm text-gray-400 mb-1">
-                Price
-              </p>
-
-              <h3 className="text-2xl font-black text-primary">
-
-                Rp {pkg.price.toLocaleString('id-ID')}
-
-              </h3>
-
-            </div>
-
-          </div>
-
-          <div className="space-y-3">
-
-            {pkg.benefits.map((benefit, index) => (
-
-              <div
-                key={index}
-                className="flex items-center gap-3 text-gray-600"
-              >
-
-                <div className="w-2 h-2 rounded-full bg-primary" />
-
-                <span>
-                  {benefit}
-                </span>
-
-              </div>
-
-            ))}
-
-          </div>
-
-        </div>
-
-      )
-    })}
-
-  </div>
-
-</div>
-
-{/* Guest Selection */}
-<div className="bg-white rounded-3xl p-8 shadow-card">
-
-  <h2 className="text-2xl font-black mb-8">
-    Guests
-  </h2>
-
-  <div className="max-w-xs">
-
-    <label className="block font-semibold mb-3">
-      Number of Guests
-    </label>
-
-    <select
-
-      value={bookingData.guests}
-
-      onChange={(e) => {
-
-        const guests = Number(e.target.value)
-
-        setBookingData({
-          ...bookingData,
-
-          guests,
-
-          totalPrice:
-            bookingData.selectedPackage.price * guests,
-        })
-      }}
-
-      className="
-        w-full
-        h-14
-        border
-        rounded-2xl
-        px-5
-        outline-none
-      "
-    >
-
-      <option value={1}>
-        1 Guest
-      </option>
-
-      <option value={2}>
-        2 Guests
-      </option>
-
-      <option value={3}>
-        3 Guests
-      </option>
-
-      <option value={4}>
-        4 Guests
-      </option>
-
-      <option value={5}>
-        5 Guests
-      </option>
-
-      <option value={6}>
-        6 Guests
-      </option>
-
-    </select>
-
-  </div>
-
-</div>
-
-              {/* Traveler Form */}
+              {/* Traveler */}
               <div className="bg-white rounded-3xl p-8 shadow-card">
 
                 <h2 className="text-2xl font-black mb-8">
@@ -299,30 +278,35 @@ function Booking() {
                     </label>
 
                     <input
-  type="text"
-
-  value={bookingData.traveler.fullName}
-
-  onChange={(e) =>
-    setBookingData({
-      ...bookingData,
-
-      traveler: {
-        ...bookingData.traveler,
-        fullName: e.target.value,
-      },
-    })
-  }
-
-  className="
-    w-full
-    h-14
-    border
-    rounded-2xl
-    px-5
-    outline-none
-  "
-/>
+                      type="text"
+                      value={
+                        traveler.fullName
+                      }
+                      onChange={(e) =>
+                        setTraveler({
+                          ...traveler,
+                          fullName:
+                            e.target.value,
+                        })
+                      }
+                      className={`
+                        w-full
+                        h-14
+                        border
+                        rounded-2xl
+                        px-5
+                        ${
+                          errors.fullName
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }
+                      `}
+                    />
+                    {errors.fullName && (
+                      <p className="text-red-500 text-sm mt-2">
+                        {errors.fullName}
+                      </p>
+                    )}
 
                   </div>
 
@@ -333,30 +317,35 @@ function Booking() {
                     </label>
 
                     <input
-  type="email"
-
-  value={bookingData.traveler.email}
-
-  onChange={(e) =>
-    setBookingData({
-      ...bookingData,
-
-      traveler: {
-        ...bookingData.traveler,
-        email: e.target.value,
-      },
-    })
-  }
-
-  className="
-    w-full
-    h-14
-    border
-    rounded-2xl
-    px-5
-    outline-none
-  "
-/>
+                      type="email"
+                      value={
+                        traveler.email
+                      }
+                      onChange={(e) =>
+                        setTraveler({
+                          ...traveler,
+                          email:
+                            e.target.value,
+                        })
+                      }
+                      className={`
+                        w-full
+                        h-14
+                        border
+                        rounded-2xl
+                        px-5
+                        ${
+                          errors.email
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }
+                      `}
+                    />
+                    {errors.email && (
+                      <p className="text-red-500 text-sm mt-2">
+                        {errors.email}
+                      </p>
+                    )}
 
                   </div>
 
@@ -367,30 +356,35 @@ function Booking() {
                     </label>
 
                     <input
-  type="text"
-
-  value={bookingData.traveler.phone}
-
-  onChange={(e) =>
-    setBookingData({
-      ...bookingData,
-
-      traveler: {
-        ...bookingData.traveler,
-        phone: e.target.value,
-      },
-    })
-  }
-
-  className="
-    w-full
-    h-14
-    border
-    rounded-2xl
-    px-5
-    outline-none
-  "
-/>
+                      type="text"
+                      value={
+                        traveler.phone
+                      }
+                      onChange={(e) =>
+                        setTraveler({
+                          ...traveler,
+                          phone:
+                            e.target.value,
+                        })
+                      }
+                      className={`
+                        w-full
+                        h-14
+                        border
+                        rounded-2xl
+                        px-5
+                        ${
+                          errors.phone
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }
+                      `}
+                    />
+                    {errors.phone && (
+                      <p className="text-red-500 text-sm mt-2">
+                        {errors.phone}
+                      </p>
+                    )}
 
                   </div>
 
@@ -401,27 +395,20 @@ function Booking() {
                     </label>
 
                     <input
-  type="date"
-
-  value={bookingData.travelDate}
-
-  onChange={(e) =>
-    setBookingData({
-      ...bookingData,
-
-      travelDate: e.target.value,
-    })
-  }
-
-  className="
-    w-full
-    h-14
-    border
-    rounded-2xl
-    px-5
-    outline-none
-  "
-/>
+                      type="text"
+                      readOnly
+                      value={
+                        booking.travel_date
+                      }
+                      className="
+                        w-full
+                        h-14
+                        border
+                        rounded-2xl
+                        px-5
+                        bg-gray-50
+                      "
+                    />
 
                   </div>
 
@@ -451,38 +438,55 @@ function Booking() {
 
                 <div className="space-y-5 mb-8">
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex justify-between">
 
                     <span className="text-gray-500">
                       Package
                     </span>
 
                     <span className="font-semibold">
-                      Standard Package
+                      {booking.package_options.name}
                     </span>
 
                   </div>
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex justify-between">
 
                     <span className="text-gray-500">
                       Guests
                     </span>
 
                     <span className="font-semibold">
-                      2 Guests
+                      {booking.guests} Guests
                     </span>
 
                   </div>
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex justify-between">
 
                     <span className="text-gray-500">
-                      Subtotal
+                      Travel Date
                     </span>
 
                     <span className="font-semibold">
-                      Rp {activity.price.toLocaleString('id-ID')}
+                      {booking.travel_date}
+                    </span>
+
+                  </div>
+
+                  <div className="flex justify-between">
+
+                    <span className="text-gray-500">
+                      Package Price
+                    </span>
+
+                    <span className="font-semibold">
+                      Rp{" "}
+                      {(
+                        booking.unit_price || 0
+                      ).toLocaleString(
+                        "id-ID"
+                      )}
                     </span>
 
                   </div>
@@ -491,7 +495,7 @@ function Booking() {
 
                 <div className="border-t pt-6 mb-8">
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex justify-between items-center">
 
                     <span className="text-lg font-bold">
                       Total
@@ -499,7 +503,12 @@ function Booking() {
 
                     <span className="text-3xl font-black text-primary">
 
-                      Rp {bookingData.totalPrice.toLocaleString('id-ID')}
+                      Rp{" "}
+                      {(
+                        booking.total_price || 0
+                      ).toLocaleString(
+                        "id-ID"
+                      )}
 
                     </span>
 
@@ -507,25 +516,20 @@ function Booking() {
 
                 </div>
 
-                <Link
-  to={`/checkout/${activity.id}`}
-  className="
-    w-full
-    h-14
-    bg-primary
-    text-white
-    rounded-2xl
-    font-bold
-    text-lg
-    hover:opacity-90
-    transition
-    flex
-    items-center
-    justify-center
-  "
->
-  Continue Checkout
-</Link>
+                <button
+                  onClick={handleContinueCheckout}
+                  className="
+                    w-full
+                    h-14
+                    bg-primary
+                    text-white
+                    rounded-2xl
+                    font-bold
+                    text-lg
+                  "
+                >
+                  Continue Checkout
+                </button>
 
               </div>
 
@@ -538,7 +542,9 @@ function Booking() {
       </section>
 
     </MainLayout>
-  )
+
+  );
+
 }
 
-export default Booking
+export default Booking;

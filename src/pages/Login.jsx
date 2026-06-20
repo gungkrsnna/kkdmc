@@ -1,8 +1,66 @@
 import { Link } from 'react-router-dom'
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabase";
 
 import Logo from '../assets/logo/logo.png'
 
 function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setError("");
+
+    try {
+      setLoading(true);
+
+      const {
+        data,
+        error
+      } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (!data?.user) {
+        setError("Unable to login.");
+        return;
+      }
+
+      if (error) throw error;
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(data.user)
+      );
+
+      navigate("/");
+
+    } catch (error) {
+
+      setError(
+        error.message ||
+        "Login failed"
+      );
+
+    } finally {
+
+      setLoading(false);
+
+    }
+  };
+
+
   return (
     <div
       className="
@@ -63,7 +121,7 @@ function Login() {
         </div>
 
         {/* Form */}
-        <form className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
 
           <input
             type="email"
@@ -81,6 +139,8 @@ function Login() {
               outline-none
               transition
             "
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <input
@@ -99,6 +159,8 @@ function Login() {
               outline-none
               transition
             "
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
 
           <div className="flex justify-end">
@@ -117,6 +179,22 @@ function Login() {
 
           </div>
 
+          {error && (
+            <div
+              className="
+                bg-red-50
+                border
+                border-red-200
+                text-red-600
+                p-4
+                rounded-2xl
+                text-sm
+              "
+            >
+              {error}
+            </div>
+          )}
+
           <button
             type="submit"
             className="
@@ -131,7 +209,7 @@ function Login() {
               transition
             "
           >
-            Login
+            {loading ? "Signing In..." : "Login"}
           </button>
 
         </form>

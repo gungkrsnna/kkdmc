@@ -1,27 +1,62 @@
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  getPromotions,
+} from "../../services/promotionService";
+
+
 function PromoBanner() {
-  const promos = [
-    {
-      id: 1,
-      image:
-        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-      title: "Summer Escape",
-      subtitle: "Up To 50% Off",
-    },
-    {
-      id: 2,
-      image:
-        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-      title: "Luxury Bali Tour",
-      subtitle: "Special Package",
-    },
-    {
-      id: 3,
-      image:
-        "https://images.unsplash.com/photo-1468413253725-0d5181091126",
-      title: "Weekend Getaway",
-      subtitle: "Limited Offer",
-    },
-  ];
+  
+  const [promos,
+    setPromos] =
+    useState([]);
+    
+    useEffect(() => {
+    
+      loadPromotions();
+    
+    }, []);
+    
+    const loadPromotions =
+      async () => {
+    
+        try {
+    
+          const data =
+            await getPromotions();
+    
+            setPromos(
+              data
+                .filter(
+                  item =>
+                    item.is_active
+                )
+                .slice(0, 3)
+            );
+    
+        } catch (error) {
+    
+          console.error(
+            error
+          );
+    
+        }
+    
+      };
+
+      const activePromos =
+      promos.filter(
+        item => item.is_active
+      );
+
+      if (
+        activePromos.length === 0
+      ) {
+        return null;
+      }
 
   return (
     <section className="py-20 bg-soft">
@@ -36,63 +71,95 @@ function PromoBanner() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
-          {promos.map((promo) => (
+        {promos.map((promo) => (
+
+          <div
+            key={promo.id}
+            className="
+              relative
+              overflow-hidden
+              rounded-3xl
+              h-[420px]
+              group
+            "
+          >
+
+            <img
+              src={promo.image_url}
+              alt={promo.title}
+              className="
+                absolute
+                inset-0
+                w-full
+                h-full
+                object-cover
+                transition
+                duration-500
+                group-hover:scale-110
+              "
+            />
+
+            <div className="absolute inset-0 bg-black/40" />
+
             <div
-              key={promo.id}
               className="
                 relative
-                overflow-hidden
-                rounded-3xl
-                h-[420px]
-                group
-                cursor-pointer
+                z-10
+                h-full
+                flex
+                flex-col
+                justify-end
+                p-6
+                text-white
               "
             >
-              <img
-                src={promo.image}
-                alt={promo.title}
+
+              <span
                 className="
-                  absolute
-                  inset-0
-                  w-full
-                  h-full
-                  object-cover
-                  transition
-                  duration-500
-                  group-hover:scale-110
+                  bg-primary
+                  px-3
+                  py-1
+                  rounded-full
+                  text-xs
+                  font-semibold
+                  w-fit
+                  mb-3
                 "
-              />
+              >
+                PROMO
+              </span>
 
-              <div className="absolute inset-0 bg-black/40" />
+              <h3 className="text-2xl font-bold mb-2">
+                {promo.title}
+              </h3>
 
-              <div className="relative z-10 h-full flex flex-col justify-end p-6 text-white">
-                <span className="bg-primary px-3 py-1 rounded-full text-xs font-semibold w-fit mb-3">
-                  PROMO
-                </span>
+              <p className="text-white/90 mb-4">
+                {promo.subtitle}
+              </p>
 
-                <h3 className="text-2xl font-bold mb-2">
-                  {promo.title}
-                </h3>
+              <a
+                href={`https://wa.me/${promo.whatsapp_number}`}
+                target="_blank"
+                rel="noreferrer"
+                className="
+                  bg-white
+                  text-black
+                  py-3
+                  rounded-xl
+                  text-center
+                  font-semibold
+                  hover:opacity-90
+                  transition
+                "
+              >
+                {promo.button_text ||
+                  "View Offer"}
+              </a>
 
-                <p className="text-white/90 mb-4">
-                  {promo.subtitle}
-                </p>
-
-                <button
-                  className="
-                    bg-white
-                    text-black
-                    py-3
-                    rounded-xl
-                    font-semibold
-                    hover:opacity-90
-                    transition
-                  "
-                >
-                  View Offer
-                </button>
-              </div>
             </div>
+
+          </div>
+
           ))}
         </div>
       </div>

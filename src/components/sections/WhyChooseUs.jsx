@@ -1,6 +1,79 @@
-import benefits from '../../data/benefits'
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  FaShieldAlt,
+  FaWallet,
+  FaHeadset,
+} from "react-icons/fa";
+
+import {
+  MdEventAvailable,
+} from "react-icons/md";
 
 function WhyChooseUs() {
+  const [benefits, setBenefits] =
+  useState([]);
+
+  const [section, setSection] =
+    useState(null);
+
+  const iconMap = {
+
+  shield:
+    FaShieldAlt,
+
+  wallet:
+    FaWallet,
+
+  headset:
+    FaHeadset,
+
+  calendar:
+    MdEventAvailable,
+
+};
+
+
+  useEffect(() => {
+
+    loadSection();
+    loadBenefits();
+
+  }, []);
+
+  const loadSection =
+    async () => {
+
+      const response =
+        await fetch(
+          "https://kkdmc.gladiatoraruna.com/api/home-sections/why_choose_us"
+        );
+
+      const data =
+        await response.json();
+
+      setSection(data);
+
+    };
+
+  const loadBenefits =
+    async () => {
+
+      const response =
+        await fetch(
+          "https://kkdmc.gladiatoraruna.com/api/home-sections/benefits"
+        );
+
+      const data =
+        await response.json();
+
+      setBenefits(data);
+
+    };
+
   return (
 
     <section className="py-24 bg-white">
@@ -11,17 +84,15 @@ function WhyChooseUs() {
         <div className="text-center mb-16">
 
           <p className="text-primary font-semibold mb-3">
-            Why Choose Us
+            {section?.badge}
           </p>
 
           <h2 className="text-5xl font-black mb-5">
-            Travel With Confidence
+            {section?.title}
           </h2>
 
           <p className="text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            We provide unforgettable travel experiences
-            with trusted services, premium destinations,
-            and exceptional customer support.
+            {section?.description}
           </p>
 
         </div>
@@ -29,9 +100,11 @@ function WhyChooseUs() {
         {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 
-          {benefits.map((item) => {
+          {Array.isArray(benefits) &&
+  benefits.map((item) => {
 
-            const Icon = item.icon
+            const Icon =
+  iconMap[item.icon];
 
             return (
 
@@ -67,7 +140,7 @@ function WhyChooseUs() {
                     transition
                   "
                 >
-                  <Icon />
+                  {Icon && <Icon />}
                 </div>
 
                 {/* Title */}

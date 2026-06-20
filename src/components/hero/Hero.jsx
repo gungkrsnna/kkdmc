@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+
 import {
   FaMapMarkerAlt,
 } from 'react-icons/fa'
@@ -10,7 +12,34 @@ import {
   IoPeopleOutline,
 } from 'react-icons/io5'
 
+
 function Hero() {
+
+  const [hero, setHero] =
+  useState(null);
+
+  useEffect(() => {
+
+    loadHero();
+
+  }, []);
+
+  const loadHero =
+  async () => {
+
+    const response =
+      await fetch(
+        "https://kkdmc.gladiatoraruna.com/api/cms/home_hero"
+      );
+
+    const data =
+      await response.json();
+
+    setHero(data);
+
+  };
+
+  if (!hero) return null;
 
   return (
 
@@ -18,7 +47,7 @@ function Hero() {
 
       {/* Background */}
       <img
-        src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?q=80&w=2070&auto=format&fit=crop"
+        src={hero.image_url}
         alt="Bali"
         className="absolute inset-0 w-full h-full object-cover"
       />
@@ -56,7 +85,7 @@ function Hero() {
 
                 <span className="w-2 h-2 rounded-full bg-primary" />
 
-                Trusted Bali Experiences
+                {hero.subtitle}
 
               </div>
 
@@ -72,9 +101,7 @@ function Hero() {
                 "
               >
 
-                Find unforgettable
-                <br />
-                things to do in Bali
+                {hero.title}
 
               </h1>
 
@@ -89,9 +116,7 @@ function Hero() {
                 "
               >
 
-                Book tours, activities, private drivers,
-                island trips, and curated experiences
-                across Bali with local experts.
+                {hero.description}
 
               </p>
 

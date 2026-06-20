@@ -1,18 +1,166 @@
+import {
+  useEffect,
+  useState,
+} from "react";
 import MainLayout from "../layouts/MainLayout";
 import HeroPage from "../components/sections/HeroPage";
 
 function AboutUs() {
+  const [hero, setHero] =
+    useState(null);
+
+  const [story, setStory] =
+    useState(null);
+
+  const [statistics, setStatistics] =
+    useState([]);
+
+  const [benefits, setBenefits] =
+    useState([]);
+
+  const [whyChooseUs, setWhyChooseUs] =
+    useState(null);
+
+  const [clients, setClients] =
+    useState([]);
+
+
+  useEffect(() => {
+
+    loadHero();
+    loadStory();
+    loadStatistics();
+    loadBenefits();
+    loadWhyChooseUs();
+    loadClients();
+
+  }, []);
+
+  const loadClients =
+  async () => {
+
+    const response =
+      await fetch(
+        "https://kkdmc.gladiatoraruna.com/api/about-clients"
+      );
+
+    const data =
+      await response.json();
+
+    setClients(data);
+
+  };
+
+  const loadHero = async () => {
+
+    const response =
+      await fetch(
+        "https://kkdmc.gladiatoraruna.com/api/home-sections/about_hero"
+      );
+
+    const data =
+      await response.json();
+
+    setHero(data);
+
+  };
+
+  const loadStory = async () => {
+
+  try {
+
+    const response =
+      await fetch(
+        "https://kkdmc.gladiatoraruna.com/api/home-sections/about_story"
+      );
+
+    const data =
+      await response.json();
+
+    setStory(data);
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+};
+
+const loadStatistics = async () => {
+
+  try {
+
+    const response =
+      await fetch(
+        "https://kkdmc.gladiatoraruna.com/api/about/statistics"
+      );
+
+    const data =
+      await response.json();
+
+    setStatistics(data);
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+};
+
+const loadBenefits = async () => {
+
+  try {
+
+    const response =
+      await fetch(
+        "https://kkdmc.gladiatoraruna.com/api/home-sections/benefits"
+      );
+
+    const data =
+      await response.json();
+
+    setBenefits(data);
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+};
+
+const loadWhyChooseUs = async () => {
+
+  try {
+
+    const response =
+      await fetch(
+        "https://kkdmc.gladiatoraruna.com/api/home-sections/about_why_choose_us"
+      );
+
+    const data =
+      await response.json();
+
+    setWhyChooseUs(data);
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+};
+
   return (
     <MainLayout>
       {/* HERO */}
       <HeroPage
-        badge="About Us"
-        title="Creating Unforgettable Bali Experiences"
-        description="
-          We help travelers discover the beauty of Bali through
-          carefully curated destinations, activities, and personalized journeys.
-        "
-        image="https://images.unsplash.com/photo-1537996194471-e657df975ab4"
+        badge={hero?.badge}
+        title={hero?.title}
+        description={hero?.description}
+        image={hero?.image_url}
       />
 
       {/* OUR STORY */}
@@ -23,7 +171,7 @@ function AboutUs() {
 
             <div>
               <img
-                src="https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86"
+                src={story?.image_url}
                 alt="About Us"
                 className="rounded-[32px] w-full h-[500px] object-cover"
               />
@@ -32,24 +180,19 @@ function AboutUs() {
             <div>
 
               <p className="text-primary font-semibold mb-3">
-                Our Story
+                {story?.badge}
               </p>
 
               <h2 className="text-5xl font-black mb-6">
-                Passionate About
-                Travel & Adventure
+                {story?.title}
               </h2>
 
               <p className="text-gray-600 leading-relaxed mb-6">
-                We are dedicated to helping travelers explore
-                Bali's breathtaking landscapes, rich culture,
-                and unforgettable adventures.
+                {story?.description}
               </p>
 
               <p className="text-gray-600 leading-relaxed">
-                From hidden beaches and mountain treks to
-                cultural experiences and private tours,
-                we create journeys tailored to every traveler.
+                {story?.content}
               </p>
 
             </div>
@@ -65,25 +208,32 @@ function AboutUs() {
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
 
-            <div className="bg-white rounded-3xl p-8 text-center">
-              <h3 className="text-5xl font-black mb-2">500+</h3>
-              <p className="text-gray-500">Happy Travelers</p>
-            </div>
+            {statistics.map((item) => (
 
-            <div className="bg-white rounded-3xl p-8 text-center">
-              <h3 className="text-5xl font-black mb-2">50+</h3>
-              <p className="text-gray-500">Destinations</p>
-            </div>
+  <div
+    key={item.id}
+    className="
+      bg-white
+      rounded-3xl
+      p-8
+      text-center
+      shadow-sm
+      hover:shadow-xl
+      transition
+    "
+  >
 
-            <div className="bg-white rounded-3xl p-8 text-center">
-              <h3 className="text-5xl font-black mb-2">100+</h3>
-              <p className="text-gray-500">Activities</p>
-            </div>
+    <h3 className="text-5xl font-black mb-3 text-primary">
+      {item.value}
+    </h3>
 
-            <div className="bg-white rounded-3xl p-8 text-center">
-              <h3 className="text-5xl font-black mb-2">4.9</h3>
-              <p className="text-gray-500">Average Rating</p>
-            </div>
+    <p className="text-gray-500 font-medium">
+      {item.title}
+    </p>
+
+  </div>
+
+))}
 
           </div>
 
@@ -93,43 +243,72 @@ function AboutUs() {
 
             <section className="py-20 bg-white">
 
-        <div className="max-w-7xl mx-auto px-6">
+  <div className="max-w-7xl mx-auto px-6">
 
-          <div className="text-center mb-16">
+    <div className="text-center mb-16">
 
-            <p className="text-primary font-semibold mb-3">
-              Why Choose Us
+      <p className="text-primary font-semibold mb-3">
+        Trusted By
+      </p>
+
+      <h2 className="text-5xl font-black mb-4">
+        Organizations & Clients
+      </h2>
+
+      <p className="text-gray-500 max-w-2xl mx-auto">
+        We are proud to work with companies,
+        communities, schools, and organizations
+        from around the world.
+      </p>
+
+    </div>
+
+    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+      {clients.map((client) => (
+
+        <div
+          key={client.id}
+          className="
+            bg-soft
+            rounded-3xl
+            overflow-hidden
+            hover:-translate-y-2
+            transition
+          "
+        >
+
+          <img
+            src={client.image_url}
+            alt={client.name}
+            className="
+              w-full
+              h-56
+              object-cover
+            "
+          />
+
+          <div className="p-6">
+
+            <h3 className="font-bold text-xl mb-2">
+              {client.name}
+            </h3>
+
+            <p className="text-gray-500 text-sm">
+              {client.description}
             </p>
-
-            <h2 className="text-5xl font-black">
-              Travel With Confidence
-            </h2>
-
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-
-            {[
-              "Local Experts",
-              "Personalized Trips",
-              "Trusted Partners",
-              "Fast Support",
-            ].map((item) => (
-              <div
-                key={item}
-                className="bg-soft rounded-3xl p-8 text-center"
-              >
-                <h3 className="font-bold text-xl">
-                  {item}
-                </h3>
-              </div>
-            ))}
 
           </div>
 
         </div>
 
-      </section>
+      ))}
+
+    </div>
+
+  </div>
+
+</section>
 
             <section className="py-20 bg-soft">
 

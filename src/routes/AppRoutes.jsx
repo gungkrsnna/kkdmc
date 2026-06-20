@@ -11,6 +11,16 @@ import Transport from '../pages/Transport'
 import Login from '../pages/Login'
 import Register from '../pages/Register'
 import AboutUs from '../pages/AboutUs'
+import ReservationPage from "../pages/ReservationPage";
+import InquiryPage from "../pages/InquiryPage";
+import VerifyEmailNotice from '../pages/VerifyEmailNotice'
+import ProtectedRoute from '../components/auth/ProtectedRoute'
+import MyInquiriesPage from '../pages/MyInquiriesPage'
+import MyReservationsPage from '../pages/MyReservationsPage'
+import BookingSuccess from '../pages/BookingSuccess'
+import MyBookingsPage
+from "../pages/MyBookingsPage";
+import BookingDetailPage from '../pages/BookingDetailPage'
 
 function AppRoutes() {
   return (
@@ -33,7 +43,7 @@ function AppRoutes() {
       />
 
       <Route
-        path="/activity/:id"
+        path="/activity/:slug"
         element={<ActivityDetail />}
       />
 
@@ -44,12 +54,20 @@ function AppRoutes() {
 
       <Route
         path="/booking/:id"
-        element={<Booking />}
+        element={
+          <ProtectedRoute>
+            <Booking />
+          </ProtectedRoute>
+        }
       />
 
       <Route
         path="/checkout/:id"
-        element={<Checkout />}
+        element={
+          <ProtectedRoute>
+            <Checkout />
+          </ProtectedRoute>
+        }
       />
 
       <Route
@@ -59,7 +77,7 @@ function AppRoutes() {
 
       <Route
         path="/destinations"
-        element={<Destinations />}
+        element={<Activities />}
       />
 
       <Route
@@ -70,6 +88,74 @@ function AppRoutes() {
       <Route
         path="/about"
         element={<AboutUs />}
+      />
+
+      <Route
+        path="/reservation"
+        element={
+          <ProtectedRoute>
+            <ReservationPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/inquiry"
+        element={
+          <ProtectedRoute>
+            <InquiryPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/account/inquiries"
+        element={
+          <ProtectedRoute>
+            <MyInquiriesPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/account/reservations"
+        element={
+          <ProtectedRoute>
+            <MyReservationsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/verify-email"
+        element={<VerifyEmailNotice />}
+      />
+
+      <Route
+        path="/booking-success/:id"
+        element={
+          <ProtectedRoute>
+            <BookingSuccess />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/account/bookings"
+        element={
+          <ProtectedRoute>
+            <MyBookingsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/account/bookings/:id"
+        element={
+          <ProtectedRoute>
+            <BookingDetailPage />
+          </ProtectedRoute>
+        }
       />
 
     </Routes>

@@ -1,9 +1,56 @@
-import categories from '../../data/categories'
+import {
+  useEffect,
+  useState,
+} from "react";
 
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
+
+import {
+  getCategories,
+} from "../../services/categoryService";
+
+import {
+  categoryIcons,
+} from "../../utils/categoryIcons";
 
 function CategorySection() {
+
+  const [categories, setCategories] =
+    useState([]);
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  const loadCategories =
+    async () => {
+
+      try {
+
+        const data =
+          await getCategories();
+
+          setCategories(
+            data
+              .filter(
+                item => item.is_active
+              )
+              .slice(0, 8)
+          );
+
+      } catch (error) {
+
+        console.error(
+          "Failed to load categories:",
+          error
+        );
+
+      }
+
+    };
+
   return (
+
     <section className="py-20 bg-white">
 
       <div className="max-w-7xl mx-auto px-6">
@@ -24,7 +71,7 @@ function CategorySection() {
           </div>
 
           <Link
-            to="/activities"
+            to="/tour-packages"
             className="
               hidden
               md:block
@@ -44,16 +91,26 @@ function CategorySection() {
         </div>
 
         {/* Categories */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-5">
+        <div
+          className="
+            grid
+            grid-cols-2
+            md:grid-cols-4
+            lg:grid-cols-8
+            gap-5
+          "
+        >
 
           {categories.map((item) => {
 
-            const Icon = item.icon
+            const Icon =
+            categoryIcons[item.icon];
 
             return (
+
               <Link
                 key={item.id}
-                to={item.page}
+                to="/tour-packages"
                 className="
                   group
                   bg-soft
@@ -64,7 +121,6 @@ function CategorySection() {
                   items-center
                   justify-center
                   text-center
-                  cursor-pointer
                   hover:bg-primary
                   transition-all
                   duration-300
@@ -89,15 +145,32 @@ function CategorySection() {
                     transition
                   "
                 >
-                  <Icon />
+
+                  {Icon ? (
+                    <Icon size={28} />
+                  ) : (
+                    <span className="text-xs">
+                      ?
+                    </span>
+                  )}
+
                 </div>
 
-                <h3 className="font-semibold text-sm group-hover:text-white transition">
+                <h3
+                  className="
+                    font-semibold
+                    text-sm
+                    group-hover:text-white
+                    transition
+                  "
+                >
                   {item.title}
                 </h3>
 
               </Link>
-            )
+
+            );
+
           })}
 
         </div>
@@ -105,7 +178,8 @@ function CategorySection() {
       </div>
 
     </section>
-  )
+
+  );
 }
 
-export default CategorySection
+export default CategorySection;

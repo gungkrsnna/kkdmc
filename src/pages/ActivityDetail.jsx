@@ -6,20 +6,153 @@ import {
   FaUsers,
 } from 'react-icons/fa'
 
+import {
+  useEffect,
+  useState,
+  useRef
+} from "react";
+
 import { FaLocationDot } from 'react-icons/fa6'
 
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import MainLayout from '../layouts/MainLayout'
-import activities from '../data/activities'
+
+import {
+  supabase,
+} from "../lib/supabase";
+
+import { toast }
+from "react-hot-toast";
+
 
 function ActivityDetail() {
 
-  const { id } = useParams()
+  const { slug } = useParams()
 
-  const activity = activities.find(
-    (item) => item.id === Number(id)
-  )
+  const navigate =
+  useNavigate();
+
+  const [dateError, setDateError] =
+    useState(false);
+
+  const [activity, setActivity] =
+  useState(null);
+
+
+  const [selectedPackage,
+    setSelectedPackage] =
+    useState(null);
+  
+  const [travelDate,
+    setTravelDate] =
+    useState("");
+  
+  const [guests,
+    setGuests] =
+    useState(2);
+  
+  const [bookingLoading,
+    setBookingLoading] =
+    useState(false);
+
+
+  const [packageError, setPackageError] =
+    useState(false);
+
+  const dateInputRef = useRef(null);
+
+  const [loading, setLoading] =
+    useState(true);
+
+    useEffect(() => {
+
+      loadActivity();
+    
+    }, [slug]);
+    
+    const loadActivity =
+      async () => {
+    
+        try {
+    
+          const response =
+  await fetch(
+    `https://kkdmc.gladiatoraruna.com/api/tour-packages/slug/${slug}`
+  );
+    
+          const data =
+            await response.json();
+    
+          setActivity(data);
+
+          if (data.package_options?.length) {
+
+            const defaultPackage =
+              data.package_options.find(
+                p => p.is_default
+              ) ||
+              data.package_options[0];
+          
+            setSelectedPackage(
+              defaultPackage
+            );
+          
+          }
+    
+        } catch (error) {
+    
+          console.error(error);
+    
+        } finally {
+    
+          setLoading(false);
+    
+        }
+    
+      };
+
+      useEffect(() => {
+
+        if (
+          activity?.package_options?.length
+        ) {
+      
+          setSelectedPackage(
+            activity.package_options[0]
+          );
+      
+        }
+      
+      }, [activity]);
+
+      useEffect(() => {
+
+        if (activity) {
+      
+          setGuests(
+            activity.minimum_pax || 1
+          );
+      
+        }
+      
+      }, [activity]);
+
+      if (loading) {
+
+        return (
+          <MainLayout>
+      
+            <div className="py-40 text-center">
+      
+              Loading...
+      
+            </div>
+      
+          </MainLayout>
+        );
+      
+      }
 
   if (!activity) {
     return (
@@ -37,6 +170,125 @@ function ActivityDetail() {
     )
   }
 
+  const guestOptions = [];
+
+  for (
+    let i =
+      Number(activity.minimum_pax || 1);
+    i <=
+      Number(
+        activity.maximum_pax || 1
+      );
+    i++
+  ) {
+    guestOptions.push(i);
+  }
+
+  const totalPrice =
+  (selectedPackage?.price ||
+    activity.start_price) *
+  guests;
+
+
+  const handleBookNow =
+  async () => {
+
+    try {
+
+      if (!selectedPackage) {
+
+        setPackageError(true);
+
+        return;
+
+      }
+
+      if (!travelDate) {
+
+        setDateError(true);
+
+        return;
+
+      }
+
+      setBookingLoading(true);
+
+      const {
+        data: { user },
+      } =
+        await supabase.auth.getUser();
+
+      if (!user) {
+
+        navigate("/login");
+
+        return;
+
+      }
+
+      const response =
+        await fetch(
+          "https://kkdmc.gladiatoraruna.com/api/tour-bookings",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify({
+
+              user_id:
+                user.id,
+
+              tour_package_id:
+                activity.id,
+
+              package_option_id:
+                selectedPackage.id,
+
+              travel_date:
+                travelDate,
+
+              guests,
+
+            }),
+
+          }
+        );
+
+      const booking =
+        await response.json();
+
+      if (!response.ok) {
+
+        throw new Error(
+          booking.message
+        );
+
+      }
+
+      navigate(
+        `/booking/${booking.id}`
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+      toast.error(
+        "Unable to create booking. Please try again."
+      );
+
+    } finally {
+
+      setBookingLoading(false);
+
+    }
+
+  };
+
   return (
 
     <MainLayout>
@@ -45,7 +297,7 @@ function ActivityDetail() {
       <section className="relative h-[520px] overflow-hidden">
 
         <img
-          src={activity.image}
+          src={activity.image_url}
           alt={activity.title}
           className="w-full h-full object-cover"
         />
@@ -66,7 +318,7 @@ function ActivityDetail() {
 
               {/* Badge */}
               <span className="bg-primary text-white px-4 py-2 rounded-full text-sm font-semibold inline-block mb-6">
-                {activity.badge}
+                {activity.featured_badge}
               </span>
 
               {/* Title */}
@@ -89,7 +341,7 @@ function ActivityDetail() {
                   </span>
 
                   <span className="text-gray-500">
-                    ({activity.reviews} reviews)
+                    ({activity.total_reviews} reviews)
                   </span>
 
                 </div>
@@ -122,7 +374,7 @@ function ActivityDetail() {
                   <FaUsers className="text-primary" />
 
                   <span>
-                    {activity.groupSize}
+                    {activity.minimum_pax} - {activity.maximum_pax} People
                   </span>
 
                 </div>
@@ -151,20 +403,40 @@ function ActivityDetail() {
     Select Package
   </h2>
 
+  {packageError && (
+    <p className="text-red-500 mb-5">
+      Please select a package
+    </p>
+  )}
+
   <div className="space-y-6">
 
-    {activity.packages.map((pkg) => (
+    {activity.package_options?.map((pkg) => (
 
       <div
-        key={pkg.id}
-        className="
-          border
-          rounded-3xl
-          p-7
-          hover:border-primary
-          transition
-          cursor-pointer
-        "
+      key={pkg.id}
+      onClick={() => {
+
+        setSelectedPackage(pkg);
+
+        setPackageError(false);
+
+      }}
+      className={`
+        border
+        rounded-3xl
+        p-7
+        transition
+        cursor-pointer
+
+        ${
+          selectedPackage?.id === pkg.id
+            ? "border-primary bg-blue-50"
+            : packageError
+            ? "border-red-500"
+            : "hover:border-primary"
+        }
+      `}
       >
 
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
@@ -178,24 +450,31 @@ function ActivityDetail() {
 
             <div className="space-y-3">
 
-              {pkg.benefits.map((benefit, index) => (
+                {pkg.features?.map(
+                  (feature) => (
 
-                <div
-                  key={index}
-                  className="flex items-center gap-3 text-gray-600"
-                >
+                    <div
+                      key={feature.id}
+                      className="
+                        flex
+                        items-center
+                        gap-3
+                        text-gray-600
+                      "
+                    >
 
-                  <div className="w-2 h-2 rounded-full bg-primary" />
+                      <div className="w-2 h-2 rounded-full bg-primary" />
 
-                  <span>
-                    {benefit}
-                  </span>
+                      <span>
+                        {feature.feature}
+                      </span>
 
-                </div>
+                    </div>
 
-              ))}
+                  )
+                )}
 
-            </div>
+              </div>
 
           </div>
 
@@ -206,26 +485,57 @@ function ActivityDetail() {
               Start from
             </p>
 
+            {selectedPackage?.id === pkg.id && (
+              <span
+                className="
+                  inline-block
+                  bg-green-100
+                  text-green-700
+                  px-3
+                  py-1
+                  rounded-full
+                  text-xs
+                  font-semibold
+                  mb-3
+                "
+              >
+                Selected
+              </span>
+            )}
+
             <h3 className="text-3xl font-black text-primary mb-5">
 
               Rp {pkg.price.toLocaleString('id-ID')}
 
             </h3>
 
-            <button
-              className="
-                bg-primary
-                text-white
-                px-6
-                h-12
-                rounded-2xl
-                font-semibold
-                hover:opacity-90
-                transition
-              "
-            >
-              Choose Package
-            </button>
+            {selectedPackage?.id === pkg.id ? (
+  <button
+    className="
+      bg-green-600
+      text-white
+      px-6
+      h-12
+      rounded-2xl
+      font-semibold
+    "
+  >
+    Selected
+  </button>
+) : (
+  <button
+    className="
+      bg-primary
+      text-white
+      px-6
+      h-12
+      rounded-2xl
+      font-semibold
+    "
+  >
+    Select Package
+  </button>
+)}
 
           </div>
 
@@ -248,23 +558,24 @@ function ActivityDetail() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-                  <div className="bg-soft rounded-3xl p-6">
-                    Professional Tour Guide
-                  </div>
+  {activity.highlights?.map(
+    (item) => (
 
-                  <div className="bg-soft rounded-3xl p-6">
-                    Premium Safety Equipment
-                  </div>
+      <div
+        key={item.id}
+        className="
+          bg-soft
+          rounded-3xl
+          p-6
+        "
+      >
+        {item.title}
+      </div>
 
-                  <div className="bg-soft rounded-3xl p-6">
-                    Beautiful Nature Experience
-                  </div>
+    )
+  )}
 
-                  <div className="bg-soft rounded-3xl p-6">
-                    Hotel Pickup Available
-                  </div>
-
-                </div>
+</div>
 
               </div>
 
@@ -277,10 +588,11 @@ function ActivityDetail() {
 
   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-    {activity.includes.map((item, index) => (
+  {activity.inclusions?.map(
+    (item) => (
 
       <div
-        key={index}
+        key={item.id}
         className="
           bg-soft
           rounded-2xl
@@ -294,14 +606,15 @@ function ActivityDetail() {
         <div className="w-3 h-3 rounded-full bg-primary" />
 
         <span className="font-medium">
-          {item}
+          {item.title}
         </span>
 
       </div>
 
-    ))}
+    )
+  )}
 
-  </div>
+</div>
 
 </div>
 
@@ -323,75 +636,206 @@ function ActivityDetail() {
               >
 
                 <p className="text-gray-400 text-sm mb-2">
-                  Start from
+                  Start From
                 </p>
 
-                <h2 className="text-4xl font-black text-primary mb-8">
+                <h2 className="text-4xl font-black text-primary mb-6">
 
-                  Rp {activity.price.toLocaleString('id-ID')}
+                  Rp {
+                    (
+                      selectedPackage?.price ||
+                      activity.start_price
+                    ).toLocaleString("id-ID")
+                  }
 
                 </h2>
 
-                <div className="space-y-5 mb-8">
+                {/* Selected Package */}
+                <div className="bg-soft rounded-2xl p-4 mb-4">
+
+                  <p className="text-xs text-gray-500 mb-1">
+                    Selected Package
+                  </p>
+
+                  <p className="font-semibold text-lg">
+
+                    {selectedPackage?.name ||
+                      "Please select package"}
+
+                  </p>
+
+                </div>
+
+                {/* Travel Date */}
+                <div className="mb-4">
+
+                  <label className="block text-sm font-semibold mb-2">
+                    Travel Date
+                  </label>
 
                   <input
+                    ref={dateInputRef}
                     type="date"
-                    className="
+                    value={travelDate}
+                    min={
+                      new Date()
+                        .toISOString()
+                        .split("T")[0]
+                    }
+                    onChange={(e) => {
+
+                      setTravelDate(
+                        e.target.value
+                      );
+
+                      setDateError(false);
+
+                    }}
+                    className={`
                       w-full
-                      border
-                      rounded-2xl
                       h-14
                       px-5
+                      rounded-2xl
                       outline-none
-                    "
+                      border
+                      ${
+                        dateError
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }
+                    `}
                   />
 
+                  {dateError && (
+
+                    <p className="text-red-500 text-sm mt-2">
+
+                      Please select a travel date
+
+                    </p>
+
+                  )}
+
+                </div>
+
+                {/* Guests */}
+                <div className="mb-6">
+
+                  <label className="block text-sm font-semibold mb-2">
+                    Guests
+                  </label>
+
                   <select
+                    value={guests}
+                    onChange={(e) =>
+                      setGuests(
+                        Number(
+                          e.target.value
+                        )
+                      )
+                    }
                     className="
                       w-full
-                      border
-                      rounded-2xl
                       h-14
                       px-5
+                      rounded-2xl
+                      border
                       outline-none
                     "
                   >
 
-                    <option>
-                      2 Guests
-                    </option>
+                    {guestOptions.map(
+                      (qty) => (
 
-                    <option>
-                      4 Guests
-                    </option>
+                        <option
+                          key={qty}
+                          value={qty}
+                        >
+                          {qty} Guests
+                        </option>
 
-                    <option>
-                      6 Guests
-                    </option>
+                      )
+                    )}
 
                   </select>
 
                 </div>
 
-                <Link
-  to={`/booking/${activity.id}`}
-  className="
-    w-full
-    bg-primary
-    text-white
-    h-14
-    rounded-2xl
-    font-bold
-    text-lg
-    hover:opacity-90
-    transition
-    flex
-    items-center
-    justify-center
-  "
->
-  Book Now
-</Link>
+                {/* Summary */}
+                <div className="border rounded-2xl p-4 mb-6">
+
+                  <div className="flex justify-between mb-3">
+
+                    <span className="text-gray-500">
+                      Price / Person
+                    </span>
+
+                    <span>
+
+                      Rp {
+                        (
+                          selectedPackage?.price ||
+                          activity.start_price
+                        ).toLocaleString("id-ID")
+                      }
+
+                    </span>
+
+                  </div>
+
+                  <div className="flex justify-between mb-3">
+
+                    <span className="text-gray-500">
+                      Guests
+                    </span>
+
+                    <span>
+                      {guests}
+                    </span>
+
+                  </div>
+
+                  <div className="border-t pt-3 flex justify-between">
+
+                    <span className="font-bold">
+                      Total
+                    </span>
+
+                    <span className="font-bold text-primary text-lg">
+
+                      Rp {
+                        totalPrice.toLocaleString(
+                          "id-ID"
+                        )
+                      }
+
+                    </span>
+
+                  </div>
+
+                </div>
+
+                {/* Book Button */}
+                <button
+                  onClick={handleBookNow}
+                  className="
+                    w-full
+                    bg-primary
+                    text-white
+                    h-14
+                    rounded-2xl
+                    font-bold
+                    text-lg
+                    hover:opacity-90
+                    transition
+                  "
+                >
+                  {
+                    bookingLoading
+                      ? "Creating Booking..."
+                      : "Book Now"
+                  }
+                </button>
 
               </div>
 

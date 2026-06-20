@@ -1,9 +1,35 @@
+import { useEffect, useState } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import destinations from '../../data/destinations'
 import DestinationCard from '../cards/DestinationCard'
 
 function DestinationSection() {
+
+  const [section, setSection] =
+  useState(null);
+
+  useEffect(() => {
+
+    loadSection();
+
+  }, []);
+
+  const loadSection =
+    async () => {
+
+      const response =
+        await fetch(
+          "https://kkdmc.gladiatoraruna.com/api/home-sections/destinations"
+        );
+
+      const data =
+        await response.json();
+
+      setSection(data);
+
+    };
+
   return (
 
     <section className="py-14 md:py-20 bg-white">
@@ -16,11 +42,11 @@ function DestinationSection() {
           <div>
 
             <p className="text-primary font-semibold mb-2">
-              Top Destination
+              {section?.badge}
             </p>
 
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
-              Discover Bali Destinations
+              {section?.title}
             </h2>
 
           </div>

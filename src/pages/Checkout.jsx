@@ -1,22 +1,161 @@
 import { useParams } from 'react-router-dom'
 
+import {
+  useState,
+  useEffect
+} from "react";
+
+import {
+  useNavigate,
+} from "react-router-dom";
+
 import MainLayout from '../layouts/MainLayout'
-import activities from '../data/activities'
 import { useBooking } from '../context/BookingContext'
 
 function Checkout() {
 
-  const { id } = useParams()
-  const { bookingData } = useBooking()
-  const serviceFee = 25000
+  const { id } = useParams();
+
+  const navigate =
+  useNavigate();
+
+  const [booking, setBooking] =
+    useState(null);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const serviceFee = 25000;
+
   const grandTotal =
-  bookingData.totalPrice + serviceFee
+    (booking?.total_price || 0) +
+    serviceFee;
 
-  const activity = activities.find(
-    (item) => item.id === Number(id)
-  )
+  useEffect(() => {
 
-  if (!activity) return null
+    loadBooking();
+  
+  }, [id]);
+
+  const [paymentProof, setPaymentProof] =
+  useState(null);
+
+  const handleFileChange = (
+    e
+  ) => {
+
+    setPaymentProof(
+      e.target.files[0]
+    );
+
+  };
+  
+  const loadBooking =
+    async () => {
+  
+      try {
+  
+        const response =
+          await fetch(
+            `https://kkdmc.gladiatoraruna.com/api/tour-bookings/${id}`
+          );
+  
+        const data =
+          await response.json();
+  
+        setBooking(data);
+  
+      } catch (error) {
+  
+        console.error(error);
+  
+      } finally {
+  
+        setLoading(false);
+  
+      }
+  
+    };
+
+    const handleSubmit =
+  async () => {
+
+    try {
+
+      if (!paymentProof) {
+
+        alert(
+          "Please upload payment proof"
+        );
+
+        return;
+
+      }
+
+      const formData =
+        new FormData();
+
+      formData.append(
+        "payment_proof",
+        paymentProof
+      );
+
+      const response =
+        await fetch(
+          `https://kkdmc.gladiatoraruna.com/api/tour-bookings/${booking.id}/upload-proof`,
+          {
+            method: "PUT",
+            body: formData,
+          }
+        );
+
+      if (!response.ok) {
+
+        throw new Error(
+          "Upload failed"
+        );
+
+      }
+
+      navigate(
+        `/booking-success/${booking.id}`
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Failed to submit payment"
+      );
+
+    }
+
+  };
+
+    if (loading) {
+
+      return (
+        <MainLayout>
+          <div className="py-40 text-center">
+            Loading...
+          </div>
+        </MainLayout>
+      );
+    
+    }
+
+    if (!booking) {
+
+      return (
+        <MainLayout>
+          <div className="py-40 text-center">
+            Booking Not Found
+          </div>
+        </MainLayout>
+      );
+    
+    }
 
   return (
 
@@ -45,7 +184,7 @@ function Checkout() {
             <div className="lg:col-span-2 space-y-8">
 
               {/* Payment Method */}
-              <div className="bg-white rounded-3xl p-8 shadow-card">
+              {/* <div className="bg-white rounded-3xl p-8 shadow-card">
 
                 <h2 className="text-2xl font-black mb-8">
                   Payment Method
@@ -71,43 +210,66 @@ function Checkout() {
 
                   </div>
 
-                  <div className="border rounded-2xl p-5 flex items-center justify-between cursor-pointer hover:border-primary transition">
+                </div>
 
-                    <div>
+              </div> */}
 
-                      <h3 className="font-bold mb-1">
-                        Bank Transfer
-                      </h3>
+              <div className="bg-blue-50 border border-blue-100 rounded-3xl p-6">
 
-                      <p className="text-gray-500 text-sm">
-                        BCA, Mandiri, BNI, BRI
-                      </p>
+                <h3 className="font-bold text-lg mb-4">
+                  Bank Transfer Information
+                </h3>
 
-                    </div>
+                <div className="space-y-4">
 
-                    <div className="w-5 h-5 rounded-full border-2 border-gray-300" />
+                  <div>
+                    <p className="text-sm text-gray-500">
+                      Bank BCA
+                    </p>
 
+                    <p className="font-bold">
+                      1234567890
+                    </p>
+
+                    <p>
+                      PT KK DMC Bali
+                    </p>
                   </div>
 
-                  <div className="border rounded-2xl p-5 flex items-center justify-between cursor-pointer hover:border-primary transition">
+                  <div>
+                    <p className="text-sm text-gray-500">
+                      Bank Mandiri
+                    </p>
 
-                    <div>
+                    <p className="font-bold">
+                      9876543210
+                    </p>
 
-                      <h3 className="font-bold mb-1">
-                        E-Wallet
-                      </h3>
-
-                      <p className="text-gray-500 text-sm">
-                        GoPay, OVO, DANA, ShopeePay
-                      </p>
-
-                    </div>
-
-                    <div className="w-5 h-5 rounded-full border-2 border-gray-300" />
-
+                    <p>
+                      PT KK DMC Bali
+                    </p>
                   </div>
 
                 </div>
+
+              </div>
+
+              <div className="bg-white rounded-3xl p-8 shadow-card">
+
+                <h2 className="text-2xl font-black mb-6">
+                  Upload Payment Proof
+                </h2>
+
+                <input
+                  type="file"
+                  accept="image/*,.pdf"
+                  onChange={handleFileChange}
+                  className="w-full"
+                />
+
+                <p className="text-sm text-gray-500 mt-3">
+                  Upload transfer receipt or payment confirmation.
+                </p>
 
               </div>
 
@@ -127,7 +289,7 @@ function Checkout() {
                     </span>
 
                     <span className="font-semibold">
-                      {bookingData.traveler.fullName}
+                      {booking.customer_name}
                     </span>
 
                   </div>
@@ -139,7 +301,7 @@ function Checkout() {
                     </span>
 
                     <span className="font-semibold">
-                      {bookingData.traveler.email}
+                      {booking.customer_email}
                     </span>
 
                   </div>
@@ -151,22 +313,22 @@ function Checkout() {
                     </span>
 
                     <span className="font-semibold">
-                      {bookingData.travelDate || '-'}
+                      {booking.travel_date}
                     </span>
 
                   </div>
 
                   <div className="flex items-center justify-between">
 
-  <span className="text-gray-500">
-    Guests
-  </span>
+                    <span className="text-gray-500">
+                      Guests
+                    </span>
 
-  <span className="font-semibold">
-    {bookingData.guests} Guests
-  </span>
+                    <span className="font-semibold">
+                      {booking.guests} Guests
+                    </span>
 
-</div>
+                  </div>
 
                 </div>
 
@@ -196,8 +358,8 @@ function Checkout() {
                 <div className="flex gap-4 mb-8">
 
                   <img
-                    src={activity.image}
-                    alt={activity.title}
+                    src={booking.tour_packages.image_url}
+                    alt={booking.tour_packages.title}
                     className="
                       w-24
                       h-24
@@ -210,12 +372,12 @@ function Checkout() {
 
                     <h3 className="font-bold leading-snug mb-2">
 
-                      {activity.title}
+                      {booking.tour_packages.title}
 
                     </h3>
 
                     <p className="text-sm text-gray-500">
-                      {bookingData.selectedPackage?.name}
+                      {booking.package_options.name}
                     </p>
 
                   </div>
@@ -232,7 +394,7 @@ function Checkout() {
                     </span>
 
                     <span className="font-semibold">
-                      Rp {bookingData.totalPrice.toLocaleString('id-ID')}
+                      Rp {booking.total_price.toLocaleString('id-ID')}
                     </span>
 
                   </div>
@@ -272,6 +434,7 @@ function Checkout() {
 
                 {/* Pay Button */}
                 <button
+                  onClick={handleSubmit}
                   className="
                     w-full
                     h-14
@@ -284,7 +447,7 @@ function Checkout() {
                     transition
                   "
                 >
-                  Pay Now
+                  Submit Payment
                 </button>
 
               </div>
