@@ -20,6 +20,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 
 function Navbar() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null)
   const [open, setOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
@@ -295,7 +296,7 @@ function Navbar() {
                         </Link>
 
                         <Link
-                          to="/my-reservations"
+                          to="/account/reservations"
                           className="
                             block
                             px-5
@@ -307,7 +308,7 @@ function Navbar() {
                         </Link>
 
                         <Link
-                          to="/my-inquiries"
+                          to="/account/inquiries"
                           className="
                             block
                             px-5
@@ -576,7 +577,7 @@ function Navbar() {
     </NavLink>
 
     <NavLink
-      to="/my-reservations"
+      to="/account/reservations"
       onClick={() => setOpen(false)}
       className="
         py-4
@@ -588,7 +589,7 @@ function Navbar() {
     </NavLink>
 
     <NavLink
-      to="/my-inquiries"
+       to="/account/inquiries"
       onClick={() => setOpen(false)}
       className="
         py-4

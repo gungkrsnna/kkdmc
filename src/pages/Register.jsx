@@ -26,6 +26,24 @@ function Register() {
     })
   }
 
+  const handleGoogleLogin =
+  async () => {
+
+    const { error } =
+      await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo:
+            window.location.origin,
+        },
+      });
+
+    if (error) {
+      setError(error.message);
+    }
+
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -285,6 +303,8 @@ function Register() {
 
         {/* Google */}
         <button
+        type="button"
+        onClick={handleGoogleLogin}
           className="
             w-full
             h-14

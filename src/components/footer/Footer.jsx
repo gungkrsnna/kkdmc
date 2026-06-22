@@ -1,4 +1,9 @@
 import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
   FaInstagram,
   FaFacebookF,
   FaTwitter,
@@ -10,6 +15,76 @@ import { Link } from "react-router-dom";
 import Logo from "../../assets/logo/logo-footer.png";
 
 function Footer() {
+  const [socials, setSocials] =
+  useState([]);
+
+  useEffect(() => {
+
+  loadSocials();
+
+}, []);
+
+const loadSocials =
+  async () => {
+
+    try {
+
+      const response =
+        await fetch(
+          "https://kkdmc.gladiatoraruna.com/api/social-media"
+        );
+
+      const data =
+        await response.json();
+
+      setSocials(data);
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+  };
+
+  const getValue =
+  (platform) => {
+
+    return socials.find(
+      item =>
+        item.platform ===
+        platform
+    )?.value || "";
+
+  };
+
+  const getSocial =
+  (platform) => {
+
+    return socials.find(
+      item =>
+        item.platform ===
+          platform &&
+        item.is_active
+    );
+
+  };
+
+  const instagram =
+  getSocial(
+    "instagram"
+  );
+
+const facebook =
+  getSocial(
+    "facebook"
+  );
+
+const twitter =
+  getSocial(
+    "x"
+  );
+
   return (
     <footer className="bg-dark text-white pt-24 pb-10">
       <div className="max-w-7xl mx-auto px-6">
@@ -39,55 +114,79 @@ function Footer() {
 
             <div className="flex items-center gap-4">
 
-              <a
-                href="#"
-                className="
-                  w-12 h-12
-                  rounded-2xl
-                  bg-white/10
-                  flex
-                  items-center
-                  justify-center
-                  hover:bg-primary
-                  transition
-                "
-              >
-                <FaInstagram />
-              </a>
+  {instagram && (
 
-              <a
-                href="#"
-                className="
-                  w-12 h-12
-                  rounded-2xl
-                  bg-white/10
-                  flex
-                  items-center
-                  justify-center
-                  hover:bg-primary
-                  transition
-                "
-              >
-                <FaFacebookF />
-              </a>
+    <a
+      href={
+        instagram.value
+      }
+      target="_blank"
+      rel="noreferrer"
+      className="
+        w-12 h-12
+        rounded-2xl
+        bg-white/10
+        flex
+        items-center
+        justify-center
+        hover:bg-primary
+        transition
+      "
+    >
+      <FaInstagram />
+    </a>
 
-              <a
-                href="#"
-                className="
-                  w-12 h-12
-                  rounded-2xl
-                  bg-white/10
-                  flex
-                  items-center
-                  justify-center
-                  hover:bg-primary
-                  transition
-                "
-              >
-                <FaTwitter />
-              </a>
+  )}
 
-            </div>
+  {facebook && (
+
+    <a
+      href={
+        facebook.value
+      }
+      target="_blank"
+      rel="noreferrer"
+      className="
+        w-12 h-12
+        rounded-2xl
+        bg-white/10
+        flex
+        items-center
+        justify-center
+        hover:bg-primary
+        transition
+      "
+    >
+      <FaFacebookF />
+    </a>
+
+  )}
+
+  {twitter && (
+
+    <a
+      href={
+        twitter.value
+      }
+      target="_blank"
+      rel="noreferrer"
+      className="
+        w-12 h-12
+        rounded-2xl
+        bg-white/10
+        flex
+        items-center
+        justify-center
+        hover:bg-primary
+        transition
+      "
+    >
+      <FaTwitter />
+    </a>
+
+  )}
+
+</div>
 
           </div>
 
@@ -168,9 +267,17 @@ function Footer() {
 
             <ul className="space-y-4 text-gray-400 text-sm mb-6">
 
-              <li>info@kkdmc.com</li>
-              <li>+62 812 3456 7890</li>
-              <li>Bali, Indonesia</li>
+              <li>
+                {getValue("email")}
+              </li>
+
+              <li>
+                {getValue("phone")}
+              </li>
+
+              <li>
+                {getValue("location")}
+              </li>
               <li>Mon - Fri, 08:00 - 18:00</li>
 
             </ul>

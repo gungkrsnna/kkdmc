@@ -21,8 +21,17 @@ function AboutUs() {
   const [whyChooseUs, setWhyChooseUs] =
     useState(null);
 
+    const [socials, setSocials] =
+  useState([]);
+
   const [clients, setClients] =
     useState([]);
+
+    const [successMessage, setSuccessMessage] =
+  useState("");
+
+const [errorMessage, setErrorMessage] =
+  useState("");
 
 
   useEffect(() => {
@@ -33,21 +42,68 @@ function AboutUs() {
     loadBenefits();
     loadWhyChooseUs();
     loadClients();
+    loadSocials();
 
   }, []);
+
+  const [form, setForm] =
+  useState({
+    fullName: "",
+    email: "",
+    message: "",
+    website: "",
+  });
+
+const [loading, setLoading] =
+  useState(false);
+
+  const handleChange = (e) => {
+  setForm({
+    ...form,
+    [e.target.name]:
+      e.target.value,
+  });
+};
 
   const loadClients =
   async () => {
 
     const response =
       await fetch(
-        "https://kkdmc.gladiatoraruna.com/api/about-clients"
+        "https://kkdmc.gladiatoraruna.com/api/home-sections/about-clients"
       );
 
     const data =
       await response.json();
 
     setClients(data);
+
+  };
+
+  const loadSocials =
+  async () => {
+
+    try {
+
+      const response =
+        await fetch(
+          "https://kkdmc.gladiatoraruna.com/api/social-media"
+        );
+
+      const data =
+        await response.json();
+
+      setSocials(
+        Array.isArray(data)
+          ? data
+          : []
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
 
   };
 
@@ -152,6 +208,89 @@ const loadWhyChooseUs = async () => {
   }
 
 };
+
+const getValue =
+  (platform) => {
+
+    return socials.find(
+      item =>
+        item.platform ===
+        platform
+    )?.value || "";
+
+  };
+
+  if (form.website) {
+  return;
+}
+
+const handleSubmit =
+  async (e) => {
+
+    e.preventDefault();
+
+    if (form.website) {
+      return;
+    }
+
+    try {
+
+      setLoading(true);
+
+      const response =
+        await fetch(
+          "https://kkdmc.gladiatoraruna.com/api/contact",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+            body: JSON.stringify({
+              full_name:
+                form.fullName,
+              email:
+                form.email,
+              message:
+                form.message,
+            }),
+          }
+        );
+
+      const data =
+        await response.json();
+
+      setSuccessMessage(
+        data.message ||
+        "Your message has been sent successfully."
+      );
+
+      setErrorMessage("");
+
+      setForm({
+        fullName: "",
+        email: "",
+        message: "",
+        website: "",
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+      setErrorMessage(
+        "Failed to send message. Please try again."
+      );
+
+      setSuccessMessage("");
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  };
 
   return (
     <MainLayout>
@@ -336,7 +475,7 @@ const loadWhyChooseUs = async () => {
                   Email
                 </h4>
                 <p className="text-gray-500">
-                  hello@yourtravel.com
+                  {getValue("email")}
                 </p>
               </div>
 
@@ -345,7 +484,7 @@ const loadWhyChooseUs = async () => {
                   Phone
                 </h4>
                 <p className="text-gray-500">
-                  +62 812 3456 7890
+                  {getValue("phone")}
                 </p>
               </div>
 
@@ -354,7 +493,7 @@ const loadWhyChooseUs = async () => {
                   Location
                 </h4>
                 <p className="text-gray-500">
-                  Bali, Indonesia
+                  {getValue("location")}
                 </p>
               </div>
 
@@ -363,27 +502,52 @@ const loadWhyChooseUs = async () => {
             {/* Form */}
             <div className="bg-white rounded-[32px] p-10">
 
-              <form className="space-y-5">
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-5"
+              >
 
                 <input
                   type="text"
+                  name="website"
+                  value={form.website}
+                  onChange={handleChange}
+                  className="hidden"
+                />
+
+                <input
+                  type="text"
+                  name="fullName"
+                  value={form.fullName}
+                  onChange={handleChange}
                   placeholder="Full Name"
                   className="w-full h-14 px-5 rounded-2xl border"
+                  required
                 />
 
                 <input
                   type="email"
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
                   placeholder="Email"
                   className="w-full h-14 px-5 rounded-2xl border"
+                  required
                 />
 
                 <textarea
                   rows="5"
+                  name="message"
+                  value={form.message}
+                  onChange={handleChange}
                   placeholder="Message"
                   className="w-full p-5 rounded-2xl border"
+                  required
                 />
 
                 <button
+                  type="submit"
+                  disabled={loading}
                   className="
                     bg-primary
                     text-white
@@ -393,8 +557,22 @@ const loadWhyChooseUs = async () => {
                     font-semibold
                   "
                 >
-                  Send Message
+                  {loading
+                    ? "Sending..."
+                    : "Send Message"}
                 </button>
+
+                {successMessage && (
+                  <p className="text-green-600 font-medium">
+                    {successMessage}
+                  </p>
+                )}
+
+                {errorMessage && (
+                  <p className="text-red-600 font-medium">
+                    {errorMessage}
+                  </p>
+                )}
 
               </form>
 
