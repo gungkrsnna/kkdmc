@@ -34,7 +34,7 @@ function BookingDetailPage() {
 
         const response =
           await fetch(
-            `https://kkdmc.gladiatoraruna.com/api/tour-bookings/${id}`
+            `http://localhost:3001/api/tour-bookings/${id}`
           );
 
         const data =

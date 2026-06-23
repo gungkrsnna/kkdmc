@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_URL =
-  "https://kkdmc.gladiatoraruna.com/api/tour-packages";
+  "http://localhost:3001/api/tour-packages";
 
 export const getTourPackages =
   async () => {

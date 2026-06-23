@@ -49,7 +49,7 @@ function WhyChooseUs() {
 
       const response =
         await fetch(
-          "https://kkdmc.gladiatoraruna.com/api/home-sections/why_choose_us"
+          "http://localhost:3001/api/home-sections/why_choose_us"
         );
 
       const data =
@@ -64,7 +64,7 @@ function WhyChooseUs() {
 
       const response =
         await fetch(
-          "https://kkdmc.gladiatoraruna.com/api/home-sections/benefits"
+          "http://localhost:3001/api/home-sections/benefits"
         );
 
       const data =

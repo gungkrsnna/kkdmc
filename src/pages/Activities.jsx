@@ -2,7 +2,9 @@ import {
     useEffect,
     useState,
   } from "react";
- 
+
+import { useSearchParams }
+from "react-router-dom";
 
 import MainLayout from '../layouts/MainLayout'
 
@@ -11,6 +13,9 @@ import ActivityCard from '../components/cards/ActivityCard'
 import HeroPage from '../components/sections/HeroPage'
 
 function Activities() {
+
+  const [searchParams] =
+  useSearchParams();
 
   const [hero, setHero] =
   useState(null);
@@ -30,6 +35,10 @@ function Activities() {
   const [sort, setSort] =
     useState("");
 
+  const [selectedSubCategory,
+    setSelectedSubCategory] =
+    useState("");
+
   const [selectedCategory, setSelectedCategory] =
     useState("");
 
@@ -47,7 +56,7 @@ const loadCategories =
 
     const response =
       await fetch(
-        "https://kkdmc.gladiatoraruna.com/api/categories"
+        "http://localhost:3001/api/categories"
       );
 
     const data =
@@ -64,7 +73,7 @@ const loadHero =
 
       const response =
         await fetch(
-          "https://kkdmc.gladiatoraruna.com/api/home-sections/activities_hero"
+          "http://localhost:3001/api/home-sections/activities_hero"
         );
 
       const data =
@@ -88,6 +97,66 @@ useEffect(() => {
 
 }, []);
 
+useEffect(() => {
+
+  const categorySlug =
+    searchParams.get("category");
+
+  const subCategorySlug =
+    searchParams.get("subcategory");
+
+  if (
+    categorySlug &&
+    categories.length > 0
+  ) {
+
+    const category =
+      categories.find(
+        c =>
+          c.slug === categorySlug
+      );
+
+    if (category) {
+
+      setSelectedCategory(
+        category.id
+      );
+
+    }
+
+  }
+
+  if (
+    subCategorySlug &&
+    categories.length > 0
+  ) {
+
+    const subCategory =
+      categories
+        .flatMap(
+          c =>
+            c.sub_categories || []
+        )
+        .find(
+          s =>
+            s.slug ===
+            subCategorySlug
+        );
+
+    if (subCategory) {
+
+      setSelectedSubCategory(
+        subCategory.id
+      );
+
+    }
+
+  }
+
+}, [
+  searchParams,
+  categories
+]);
 
 const loadActivities =
   async () => {
@@ -96,7 +165,7 @@ const loadActivities =
 
       const response =
         await fetch(
-          "https://kkdmc.gladiatoraruna.com/api/tour-packages"
+          "http://localhost:3001/api/tour-packages"
         );
 
       const data =
@@ -159,6 +228,17 @@ const loadActivities =
           (item) =>
             item.category_id ===
             selectedCategory
+        );
+
+    }
+
+    if (selectedSubCategory) {
+
+      result =
+        result.filter(
+          item =>
+            item.sub_category_id ===
+            selectedSubCategory
         );
 
     }
@@ -359,6 +439,78 @@ const loadActivities =
 </div>
 
                 </div>
+
+                {/* Sub Category */}
+{selectedCategory && (
+
+  <div className="mb-7">
+
+    <label className="font-semibold mb-4 block">
+      Sub Category
+    </label>
+
+    <div className="space-y-3">
+
+      <button
+        onClick={() =>
+          setSelectedSubCategory("")
+        }
+        className={`
+          block
+          text-left
+          hover:text-primary
+
+          ${
+            selectedSubCategory === ""
+              ? "font-bold text-primary"
+              : ""
+          }
+        `}
+      >
+        All Sub Categories
+      </button>
+
+      {categories
+        .find(
+          c =>
+            c.id ===
+            selectedCategory
+        )
+        ?.sub_categories
+        ?.map(
+          sub => (
+
+            <button
+              key={sub.id}
+              onClick={() =>
+                setSelectedSubCategory(
+                  sub.id
+                )
+              }
+              className={`
+                block
+                text-left
+                hover:text-primary
+
+                ${
+                  selectedSubCategory ===
+                  sub.id
+                    ? "font-bold text-primary"
+                    : ""
+                }
+              `}
+            >
+              {sub.title}
+            </button>
+
+          )
+        )}
+
+    </div>
+
+  </div>
+
+)}
 
                 {/* Price */}
                 <div className="mb-7">

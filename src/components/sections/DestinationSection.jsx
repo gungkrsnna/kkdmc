@@ -20,7 +20,7 @@ function DestinationSection() {
 
       const response =
         await fetch(
-          "https://kkdmc.gladiatoraruna.com/api/home-sections/destinations"
+          "http://localhost:3001/api/home-sections/destinations"
         );
 
       const data =

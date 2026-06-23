@@ -31,7 +31,7 @@ const loadSocials =
 
       const response =
         await fetch(
-          "https://kkdmc.gladiatoraruna.com/api/social-media"
+          "http://localhost:3001/api/social-media"
         );
 
       const data =

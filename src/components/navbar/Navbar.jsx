@@ -19,27 +19,78 @@ import Logo from '../../assets/logo/logo.png'
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 
+import {
+  FaHotel,
+  FaUmbrellaBeach,
+  FaPlaneDeparture,
+  FaSpa,
+  FaWater,
+} from "react-icons/fa";
+
+import {
+  MdDirectionsCar,
+} from "react-icons/md";
+
+import {
+  GiPathDistance,
+  GiIsland,
+} from "react-icons/gi";
+
 function Navbar() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null)
   const [open, setOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
+  const [categories, setCategories] =
+  useState([]);
+  const [mobileProductsOpen,
+  setMobileProductsOpen] =
+  useState(false);
+
+  const iconMap = {
+    FaHotel,
+    FaUmbrellaBeach,
+    FaPlaneDeparture,
+    FaSpa,
+    FaWater,
+    MdDirectionsCar,
+    GiPathDistance,
+    GiIsland,
+  };
+
+  const loadCategories =
+  async () => {
+
+    const response =
+      await fetch(
+        "http://localhost:3001/api/categories"
+      );
+
+    const data =
+      await response.json();
+
+    setCategories(data);
+
+  };
+
+  const getUser = async () => {
+
+    const {
+      data: { user }
+    } =
+      await supabase.auth.getUser();
+
+    setUser(user);
+
+  };
 
   useEffect(() => {
 
-    const getUser = async () => {
+    getUser();
 
-      const {
-        data: { user }
-      } = await supabase.auth.getUser()
+    loadCategories();
 
-      setUser(user)
-
-    }
-
-    getUser()
-
-  }, [])
+  }, []);
 
   const handleLogout = async () => {
 
@@ -75,15 +126,27 @@ function Navbar() {
 </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center gap-8 text-sm font-medium">
+          <div
+            className="
+              hidden
+              lg:flex
+              items-center
+              gap-8
+              text-sm
+              font-medium
+              h-full
+            "
+          >
 
   <NavLink
     to="/"
     className={({ isActive }) =>
       `
-        transition
-        relative
-        pb-1
+        h-20
+        flex
+        items-center
+        text-gray-700
+        hover:text-primary
 
         ${isActive
           ? 'text-primary'
@@ -95,23 +158,211 @@ function Navbar() {
     Home
   </NavLink>
 
-  <NavLink
-    to="/destinations"
-    className={({ isActive }) =>
-      `
-        transition
-        relative
-        pb-1
+  <div className="
+    group
+    h-20
+    flex
+    items-center
+  ">
 
-        ${isActive
-          ? 'text-primary'
-          : 'text-gray-700 hover:text-primary'
-        }
-      `
-    }
-  >
-    Products
-  </NavLink>
+    <button
+      className="
+        h-full
+        flex
+        items-center
+        gap-2
+        text-gray-700
+        hover:text-primary
+      "
+    >
+      Products
+
+      <svg
+        className="
+          w-4
+          h-4
+          transition
+          group-hover:rotate-180
+        "
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M19 9l-7 7-7-7"
+        />
+      </svg>
+
+    </button>
+
+      <div
+        className="
+          invisible
+          opacity-0
+
+          group-hover:visible
+          group-hover:opacity-100
+
+          transition-all
+          duration-200
+
+          fixed
+          left-0
+          top-20
+
+          w-full
+
+          bg-white
+          border-t
+          shadow-2xl
+
+          z-50
+        "
+      >
+
+        <div
+          className="
+            max-w-7xl
+            mx-auto
+            px-8
+            py-10
+          "
+        >
+
+          <div
+            className="
+              grid
+              grid-cols-3
+              xl:grid-cols-4
+              gap-8
+            "
+          >
+
+            {categories.map(category => {
+
+              const Icon =
+                iconMap[category.icon];
+
+              return (
+
+                <div
+                  key={category.id}
+                  className="
+                    p-5
+                    rounded-2xl
+                    hover:bg-gray-50
+                    transition
+                  "
+                >
+
+                  <Link
+                    to={`/activities?category=${category.slug}`}
+                    className="
+                      flex
+                      items-center
+                      gap-3
+                      mb-4
+                    "
+                  >
+
+                    <div
+                      className="
+                        w-12
+                        h-12
+                        rounded-2xl
+                        bg-primary/10
+                        flex
+                        items-center
+                        justify-center
+                        text-2xl
+                      "
+                    >
+                      {Icon && (
+                        <Icon
+                          className="
+                            text-primary
+                            text-xl
+                          "
+                        />
+                      )}
+                    </div>
+
+                    <div>
+
+                      <h3
+                        className="
+                          font-bold
+                          text-lg
+                          text-gray-900
+                        "
+                      >
+                        {category.title}
+                      </h3>
+
+                    </div>
+
+                  </Link>
+
+                  {category.sub_categories?.length > 0 ? (
+
+                    <div className="space-y-2">
+
+                      {category.sub_categories.map(
+                        sub => (
+
+                          <Link
+                            key={sub.id}
+                            to={`/activities?subcategory=${sub.slug}`}
+                            className="
+                              block
+                              text-gray-500
+                              hover:text-primary
+                              transition
+                            "
+                          >
+                            {sub.title}
+                          </Link>
+
+                        )
+                      )}
+
+                    </div>
+
+                  ) : (
+
+                    <Link
+                      to={`/category/${category.slug}`}
+                      className="
+                        inline-flex
+                        items-center
+                        text-primary
+                        font-medium
+                        hover:underline
+                      "
+                    >
+                      <p className="text-sm text-gray-400">
+                        Explore all packages
+                      </p>
+                    </Link>
+
+                  )}
+
+                </div>
+
+              );
+
+            })}
+
+          </div>
+      
+        </div>
+
+      </div>
+
+    </div>
 
   {/* <NavLink
     to="/activities"
@@ -153,9 +404,11 @@ function Navbar() {
     to="/about"
     className={({ isActive }) =>
       `
-        transition
-        relative
-        pb-1
+         h-20
+          flex
+          items-center
+          text-gray-700
+          hover:text-primary
 
         ${isActive
           ? 'text-primary'
@@ -483,24 +736,121 @@ function Navbar() {
     Home
   </NavLink>
 
-  <NavLink
-    to="/destinations"
-    className={({ isActive }) =>
-      `
-        py-4
-        border-b
-        font-medium
-        transition
+  <div className="border-b">
 
-        ${isActive
-          ? 'text-primary'
-          : 'text-gray-700'
-        }
-      `
+  <button
+    onClick={() =>
+      setMobileProductsOpen(
+        !mobileProductsOpen
+      )
     }
+    className="
+      w-full
+      py-4
+      flex
+      items-center
+      justify-between
+      font-medium
+      text-gray-700
+    "
   >
-    Products
-  </NavLink>
+
+    <span>
+      Products
+    </span>
+
+    <svg
+      className={`
+        w-4
+        h-4
+        transition
+        ${
+          mobileProductsOpen
+            ? "rotate-180"
+            : ""
+        }
+      `}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M19 9l-7 7-7-7"
+      />
+    </svg>
+
+  </button>
+
+  {mobileProductsOpen && (
+
+  <div
+    className="
+      pb-4
+      space-y-4
+    "
+  >
+
+    {categories.map(
+      category => (
+
+        <div
+          key={category.id}
+          className="
+            pl-4
+          "
+        >
+
+          <Link
+            to={`/activities?category=${category.slug}`}
+            onClick={() =>
+              setOpen(false)
+            }
+            className="
+              block
+              font-semibold
+              text-primary
+              mb-2
+            "
+          >
+            {category.title}
+          </Link>
+
+          {category.sub_categories?.map(
+            sub => (
+
+              <Link
+                key={sub.id}
+                to={`/activities?subcategory=${sub.slug}`}
+                onClick={() =>
+                  setOpen(false)
+                }
+                className="
+                  block
+                  py-1
+                  pl-3
+                  text-sm
+                  text-gray-500
+                "
+              >
+                {sub.title}
+              </Link>
+
+            )
+          )}
+
+        </div>
+
+      )
+    )}
+
+  </div>
+
+)}
+
+</div>
 
   {/* <NavLink
     to="/activities"
