@@ -68,7 +68,7 @@ import {
   
           const response =
             await fetch(
-              `http://localhost:3001/api/tour-bookings/my-bookings?user_id=${user.id}`
+              `https://kkdmc.gladiatoraruna.com/api/tour-bookings/my-bookings?user_id=${user.id}`
             );
   
           const data =

@@ -42,7 +42,7 @@ function PopularActivities() {
 
     const response =
       await fetch(
-        "http://localhost:3001/api/home-sections/popular_activities"
+        "https://kkdmc.gladiatoraruna.com/api/home-sections/popular_activities"
       );
 
     const data =

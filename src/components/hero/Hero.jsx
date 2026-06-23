@@ -29,7 +29,7 @@ function Hero() {
 
     const response =
       await fetch(
-        "http://localhost:3001/api/cms/home_hero"
+        "https://kkdmc.gladiatoraruna.com/api/cms/home_hero"
       );
 
     const data =

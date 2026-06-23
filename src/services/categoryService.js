@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_URL =
-  "http://localhost:3001/api/categories";
+  "https://kkdmc.gladiatoraruna.com/api/categories";
 
 export const getCategories =
   async () => {

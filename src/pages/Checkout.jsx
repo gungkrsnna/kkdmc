@@ -57,7 +57,7 @@ function Checkout() {
   
         const response =
           await fetch(
-            `http://localhost:3001/api/tour-bookings/${id}`
+            `https://kkdmc.gladiatoraruna.com/api/tour-bookings/${id}`
           );
   
         const data =
@@ -102,7 +102,7 @@ function Checkout() {
 
       const response =
         await fetch(
-          `http://localhost:3001/api/tour-bookings/${booking.id}/upload-proof`,
+          `https://kkdmc.gladiatoraruna.com/api/tour-bookings/${booking.id}/upload-proof`,
           {
             method: "PUT",
             body: formData,

@@ -98,7 +98,7 @@ function Booking() {
     try {
 
       await fetch(
-        `http://localhost:3001/api/tour-bookings/${booking.id}`,
+        `https://kkdmc.gladiatoraruna.com/api/tour-bookings/${booking.id}`,
         {
           method: "PUT",
 
@@ -139,7 +139,7 @@ function Booking() {
   
         const response =
           await fetch(
-            `http://localhost:3001/api/tour-bookings/${id}`
+            `https://kkdmc.gladiatoraruna.com/api/tour-bookings/${id}`
           );
   
         const data =

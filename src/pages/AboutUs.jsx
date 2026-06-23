@@ -70,7 +70,7 @@ const [loading, setLoading] =
 
     const response =
       await fetch(
-        "http://localhost:3001/api/home-sections/about-clients"
+        "https://kkdmc.gladiatoraruna.com/api/home-sections/about-clients"
       );
 
     const data =
@@ -87,7 +87,7 @@ const [loading, setLoading] =
 
       const response =
         await fetch(
-          "http://localhost:3001/api/social-media"
+          "https://kkdmc.gladiatoraruna.com/api/social-media"
         );
 
       const data =
@@ -111,7 +111,7 @@ const [loading, setLoading] =
 
     const response =
       await fetch(
-        "http://localhost:3001/api/home-sections/about_hero"
+        "https://kkdmc.gladiatoraruna.com/api/home-sections/about_hero"
       );
 
     const data =
@@ -127,7 +127,7 @@ const [loading, setLoading] =
 
     const response =
       await fetch(
-        "http://localhost:3001/api/home-sections/about_story"
+        "https://kkdmc.gladiatoraruna.com/api/home-sections/about_story"
       );
 
     const data =
@@ -149,7 +149,7 @@ const loadStatistics = async () => {
 
     const response =
       await fetch(
-        "http://localhost:3001/api/about/statistics"
+        "https://kkdmc.gladiatoraruna.com/api/about/statistics"
       );
 
     const data =
@@ -171,7 +171,7 @@ const loadBenefits = async () => {
 
     const response =
       await fetch(
-        "http://localhost:3001/api/home-sections/benefits"
+        "https://kkdmc.gladiatoraruna.com/api/home-sections/benefits"
       );
 
     const data =
@@ -193,7 +193,7 @@ const loadWhyChooseUs = async () => {
 
     const response =
       await fetch(
-        "http://localhost:3001/api/home-sections/about_why_choose_us"
+        "https://kkdmc.gladiatoraruna.com/api/home-sections/about_why_choose_us"
       );
 
     const data =
@@ -239,7 +239,7 @@ const handleSubmit =
 
       const response =
         await fetch(
-          "http://localhost:3001/api/contact",
+          "https://kkdmc.gladiatoraruna.com/api/contact",
           {
             method: "POST",
             headers: {

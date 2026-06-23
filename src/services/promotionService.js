@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_URL =
-  "http://localhost:3001/api/promotions";
+  "https://kkdmc.gladiatoraruna.com/api/promotions";
 
 export const getPromotions =
   async () => {

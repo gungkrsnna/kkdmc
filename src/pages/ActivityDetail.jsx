@@ -78,7 +78,7 @@ function ActivityDetail() {
     
           const response =
   await fetch(
-    `http://localhost:3001/api/tour-packages/slug/${slug}`
+    `https://kkdmc.gladiatoraruna.com/api/tour-packages/slug/${slug}`
   );
     
           const data =
@@ -228,7 +228,7 @@ function ActivityDetail() {
 
       const response =
         await fetch(
-          "http://localhost:3001/api/tour-bookings",
+          "https://kkdmc.gladiatoraruna.com/api/tour-bookings",
           {
             method: "POST",
 

@@ -56,7 +56,7 @@ const loadCategories =
 
     const response =
       await fetch(
-        "http://localhost:3001/api/categories"
+        "https://kkdmc.gladiatoraruna.com/api/categories"
       );
 
     const data =
@@ -73,7 +73,7 @@ const loadHero =
 
       const response =
         await fetch(
-          "http://localhost:3001/api/home-sections/activities_hero"
+          "https://kkdmc.gladiatoraruna.com/api/home-sections/activities_hero"
         );
 
       const data =
@@ -165,7 +165,7 @@ const loadActivities =
 
       const response =
         await fetch(
-          "http://localhost:3001/api/tour-packages"
+          "https://kkdmc.gladiatoraruna.com/api/tour-packages"
         );
 
       const data =

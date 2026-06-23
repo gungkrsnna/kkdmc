@@ -63,7 +63,7 @@ function Navbar() {
 
     const response =
       await fetch(
-        "http://localhost:3001/api/categories"
+        "https://kkdmc.gladiatoraruna.com/api/categories"
       );
 
     const data =
