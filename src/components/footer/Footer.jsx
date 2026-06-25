@@ -213,25 +213,34 @@ const twitter =
                   to="/about"
                   className="hover:text-white transition"
                 >
-                  About Us
+                  Contact Us
                 </Link>
               </li>
 
               <li>
                 <Link
-                  to="/destinations"
+                  to="/faq"
                   className="hover:text-white transition"
                 >
-                  Destinations
+                  FAQ
                 </Link>
               </li>
 
               <li>
                 <Link
-                  to="/activities"
+                  to="/reservation"
                   className="hover:text-white transition"
                 >
-                  Activities
+                  Reservation
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/inquiry"
+                  className="hover:text-white transition"
+                >
+                  Inquiry
                 </Link>
               </li>
 
@@ -248,11 +257,12 @@ const twitter =
 
             <ul className="space-y-4 text-gray-400">
 
-              <li>Ubud</li>
-              <li>Uluwatu</li>
-              <li>Nusa Penida</li>
-              <li>Canggu</li>
-              <li>Kintamani</li>
+              <li>Bali</li>
+              <li>Labuan Bajo</li>
+              <li>Japan</li>
+              <li>Thailand</li>
+              <li>Singapore</li>
+              <li>Vietnam</li>
 
             </ul>
 

@@ -417,7 +417,7 @@ function Navbar() {
       `
     }
   >
-    About Us
+    Contact Us
   </NavLink>
 
 </div>
@@ -906,7 +906,7 @@ function Navbar() {
       `
     }
   >
-    About Us
+    Contact Us
   </NavLink>
 
   {user && (

@@ -21,6 +21,7 @@ import BookingSuccess from '../pages/BookingSuccess'
 import MyBookingsPage
 from "../pages/MyBookingsPage";
 import BookingDetailPage from '../pages/BookingDetailPage'
+import FaqPage from "../pages/FaqPage";
 
 function AppRoutes() {
   return (
@@ -83,6 +84,11 @@ function AppRoutes() {
       <Route
         path="/transport"
         element={<Transport />}
+      />
+
+      <Route
+        path="/faq"
+        element={<FaqPage />}
       />
 
       <Route

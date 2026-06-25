@@ -1,4 +1,62 @@
+import { useState } from "react";
+import axios from "axios";
+
 function NewsletterSection() {
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] =
+    useState(false);
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSubscribe();
+    }
+  };
+
+  const handleSubscribe = async () => {
+    try {
+      setMessage("");
+
+      if (!email.trim()) {
+        setMessage("Please enter your email address.");
+        setMessageType("error");
+        return;
+      }
+
+      setLoading(true);
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/newsletter/subscribe`,
+        {
+          email,
+          website: "",
+        }
+      );
+
+      if (response.data.success) {
+        setMessage(
+          "Thank you for subscribing to our newsletter!"
+        );
+
+        setMessageType("success");
+
+        setEmail("");
+      }
+    } catch (error) {
+      console.error(error);
+
+      const msg =
+        error?.response?.data?.message ||
+        "Subscription failed.";
+
+      setMessage(msg);
+      setMessageType("error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
 
     <section className="py-24 bg-white">
@@ -47,6 +105,11 @@ function NewsletterSection() {
 
                 <input
                   type="email"
+                  value={email}
+                  onChange={(e) =>
+                    setEmail(e.target.value)
+                  }
+                  onKeyDown={handleKeyDown}
                   placeholder="Enter your email"
                   className="
                     flex-1
@@ -71,7 +134,18 @@ function NewsletterSection() {
                   "
                 />
 
+                <input
+                  type="text"
+                  name="website"
+                  autoComplete="off"
+                  style={{
+                    display: "none",
+                  }}
+                />
+
                 <button
+                  onClick={handleSubscribe}
+                  disabled={loading}
                   className="
                     h-[58px]
                     md:h-16
@@ -87,10 +161,29 @@ function NewsletterSection() {
                     whitespace-nowrap
                   "
                 >
-                  Subscribe
+                  {loading
+                    ? "Subscribing..."
+                    : "Subscribe"}
                 </button>
 
               </div>
+
+              {message && (
+                <div
+                  className={`
+                    mt-4
+                    text-sm
+                    font-medium
+                    ${
+                      messageType === "success"
+                        ? "text-green-200"
+                        : "text-red-200"
+                    }
+                  `}
+                >
+                  {message}
+                </div>
+              )}
 
             </div>
 
