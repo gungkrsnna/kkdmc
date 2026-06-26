@@ -22,6 +22,8 @@ import MyBookingsPage
 from "../pages/MyBookingsPage";
 import BookingDetailPage from '../pages/BookingDetailPage'
 import FaqPage from "../pages/FaqPage";
+import NewsPage from '../pages/NewsPage'
+import NewsDetailPage from '../pages/NewsDetailPage'
 
 function AppRoutes() {
   return (
@@ -94,6 +96,16 @@ function AppRoutes() {
       <Route
         path="/about"
         element={<AboutUs />}
+      />
+
+      <Route
+        path="/news"
+        element={<NewsPage />}
+      />
+
+      <Route
+          path="/news/:slug"
+          element={<NewsDetailPage />}
       />
 
       <Route

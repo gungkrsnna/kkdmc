@@ -401,6 +401,25 @@ function Navbar() {
   </NavLink> */}
 
   <NavLink
+    to="/news"
+    className={({ isActive }) =>
+      `
+        h-20
+        flex
+        items-center
+
+        ${
+          isActive
+            ? "text-primary"
+            : "text-gray-700 hover:text-primary"
+        }
+      `
+    }
+  >
+    News
+  </NavLink>
+
+  <NavLink
     to="/about"
     className={({ isActive }) =>
       `
@@ -889,6 +908,26 @@ function Navbar() {
   >
     Transport
   </NavLink> */}
+
+  <NavLink
+    to="/news"
+    onClick={() => setOpen(false)}
+    className={({ isActive }) =>
+      `
+        py-4
+        border-b
+        font-medium
+
+        ${
+          isActive
+            ? "text-primary"
+            : "text-gray-700"
+        }
+      `
+    }
+  >
+    News
+  </NavLink>
 
   <NavLink
     to="/about"
